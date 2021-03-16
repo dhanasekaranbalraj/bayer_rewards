@@ -1,0 +1,35 @@
+@import '../../styles//variables.scss';
+
+
+.formRow{
+    position: relative;
+}
+.form-group {
+    margin-bottom: 0.8rem !important;
+}
+.form {
+    left      : 50%;
+    top       : 50%;
+    position  : absolute;
+    transform : translate(-50%, -50%);
+}
+.loginBtn .form-control {
+    border-radius: 30px !important;
+}
+.btn-secondary {
+    // background-color: $secondary;
+    // border: 1px solid gray;
+    color: #fff;
+    background-color: $secondary !important;
+    border-color: #6c757d;
+}
+.forgot {
+    text-align: center;
+    font-size: 13px;
+    font-family: 'appItalic';
+    letter-spacing: 0px;
+    color: #1F4359 !important;
+    opacity: 1;
+}
+
+

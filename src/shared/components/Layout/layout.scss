@@ -1,0 +1,35 @@
+.navbar-custom{
+    background-image: url('../../widgets/icons/nav_bar.svg');
+    background-repeat: no-repeat;
+}
+.center {
+    img {
+        padding: 27px 0px 0px 10px;
+    }
+}
+.logoTitle{
+    display: flex;
+}
+.profileImg {
+    display: flex;
+    align-items: center;
+    img {
+      height: 50px;
+      width: 50px;
+    }
+    .content{
+      padding: 10px;
+      span {
+        font-size: 12px;
+      }
+    }
+    .title{
+      font-size: 16px;
+      margin: 0;
+      line-height: 15px;
+      font-weight: 700;
+    }
+  }
+// .left .side-menu {
+//     background-image: url('../../widgets/icons/large_logo_holder.svg');
+// }
