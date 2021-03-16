@@ -45,6 +45,7 @@ h1, h2, h3 {
 
 h4, h5, h6 {
   font-family: 'appBold' !important;
+  font-size: 28px;
   -webkit-font-smoothing: auto;
   -moz-osx-font-smoothing: auto;
 }
@@ -735,7 +736,7 @@ dt {
 
 .menu-title {
   padding: 12px 20px !important;
-  letter-spacing: 2px;
+  letter-spacing: 1px;
   font-size: 16px;
   font-weight: 500;
   text-transform: uppercase;

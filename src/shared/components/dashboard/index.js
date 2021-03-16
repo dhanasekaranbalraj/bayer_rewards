@@ -19,19 +19,52 @@ render(){
     return(
             <AUX>
                 <div className="container-fluid">
-                <div className="page-title-box mt-2">
-                    <div className="row align-items-center">
-                        <div className="col-sm-6">
-                            <h4 className="page-title">Dashboard</h4>
-                            <ol className="breadcrumb">
-                                <li className="breadcrumb-item active">Welcome to Bayer rewards sceience</li>
-                            </ol>
-                        </div>
-                        <div className="col-sm-6">
-                        {/* <Settings /> */}
+                    <div className="page-title-box mt-2">
+                        <div className="row align-items-center">
+                            <div className="col-sm-6">
+                                <h4 className="page-title">Dashboard</h4>
+                            </div>
+                            <div className="col-sm-6">
+                            </div>
                         </div>
                     </div>
-                </div>
+                    <div className="row">
+                        <div className="col-xl-3">
+                            <div className="card">
+                                <div className="card-body text-center">
+                                    <h4 className="mt-0 header-title mb-4">Targets Progress</h4>
+                                    <div id="center_chart">  
+                                    {/* <Piecharts /> */}
+                                    </div>
+                                                                    
+                                </div>
+                            </div>
+                        </div>
+                        <div className="col-xl-5">
+                            <div className="card">
+                                <div className="card-body text-center">
+                                    <h4 className="mt-0 header-title mb-4">By Product Group</h4>
+                                    <div id="center_chart">  
+                                    </div>
+                                                                    
+                                </div>
+                            </div>
+                        </div>
+                        <div className="col-xl-4">
+                            <div className="card">
+                                <div className="card-body text-center">
+                                    <h4 className="mt-0 header-title mb-4">Overall Scans</h4>
+                                    <div id="center_chart">  
+                                    </div>
+                                                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+
 
                 {/* <div className="row">
                     <div className="col-xl-3 col-md-6">

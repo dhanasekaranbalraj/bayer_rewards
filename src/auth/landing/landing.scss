@@ -107,17 +107,17 @@
     position: relative;
     .logoutContent {
         h4 {
+            font-family: 'appItalic';
             text-align: center;
-            font: italic normal bold 32px/43px Open Sans;
             letter-spacing: 0px;
-            color: #1F445A;
+            color: $appSecondary;
             opacity: 1;
         }
     }
     
     h4 {
-        color: black;
-        font-size: 32px;
+        color: #000000;
+        // font-size: 32px;
     }
     p {
         text-align: left;

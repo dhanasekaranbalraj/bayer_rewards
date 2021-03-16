@@ -46,7 +46,7 @@ class TopBar extends Component<Props,States> {
         }));
     }
     handleChange = (value: any) => {
-        console.log(value, 'value');
+        console.log(this.props.history, 'history');
         setLocalStorageData('isLoggedOut', true);
         clearLocalStorageData('userData');
         this.props.history.push('/landing');
