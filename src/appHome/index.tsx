@@ -9,6 +9,10 @@ const Dashboard = lazy(() =>
   import('../shared/components/dashboard')
     .then(({ Dashboard }) => ({ default: Dashboard }))
 );
+const ScanLogs = lazy(() =>
+  import('../shared/components/scanLogs')
+    .then(({ ScanLogs }) => ({ default: ScanLogs }))
+);
 
 class MyApp extends Component<any, any> {
   constructor(props: any){
@@ -24,7 +28,7 @@ class MyApp extends Component<any, any> {
       <AUX>
         <div id="wrapper">
             <TopBar  {...this.props} />
-            <SideBar />
+            <SideBar {...this.props} />
             <div className="content-page">
               <div className="content">
                   <Suspense fallback={<p>...</p>}>
@@ -33,7 +37,7 @@ class MyApp extends Component<any, any> {
                         <Redirect to={`/dashboard`} />
                       </Route>
                       <Route path={`/dashboard`} component={Dashboard} />
-                      {/* <Route path={`${path}/createUser`} component={Dashboard} /> */}
+                      <Route path={`/scanLogs`} component={ScanLogs} />
                       {/* <Route path={`${path}/userList`} component={Contacts} /> */}
                       {/* <Route path='*' render={() => <Error404 />} /> */}
                     </Switch>

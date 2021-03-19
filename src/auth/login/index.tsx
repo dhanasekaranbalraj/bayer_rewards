@@ -13,6 +13,7 @@ import { invokePostService } from '../../base/service';
 import { setLocalStorageData } from '../../base/localStore';
 import { toastError } from '../../shared/widgets/toaster';
 import Loaders from '../../shared/widgets/loader';
+import Cookies from 'js-cookie';
 
 type Props = {
     location?: any;
@@ -23,8 +24,10 @@ type States = {
     password: any;
     usernameError: any;
     passwordError: any;
+    isRemember: boolean;
     isPwdView: boolean;
     isLoader: boolean;
+    validErrorMsg: any;
 }
 class Login extends Component<Props, States>{
     constructor(props: any){
@@ -34,8 +37,10 @@ class Login extends Component<Props, States>{
             password: '',
             usernameError: '',
             passwordError: '',
+            isRemember: false,
             isPwdView: false,
-            isLoader: false
+            isLoader: false,
+            validErrorMsg: ""
         };
         console.log(this.props, 'propss')
     }
@@ -78,14 +83,16 @@ class Login extends Component<Props, States>{
             this.setState({isLoader: true});
             invokePostService(login, data).then((response: any) => {
                 console.log(response, 'response');
+                response.body.isRemember = this.state.isRemember;
                 setLocalStorageData('userData', JSON.stringify(response.body));
+                Cookies.set('userData', JSON.stringify(response.body), {expires: 7});
                 this.props.history.push('/dashboard');
-                this.setState({isLoader: false});
+                this.setState({isLoader: false, validErrorMsg: ""});
     
             }).catch((error) => {
-                this.setState({isLoader: false});
+                this.setState({isLoader: false, validErrorMsg: error.message });
                 console.log(error, 'error');
-                toastError(error.message);
+                // toastError(error.message);
             });
         }
         
@@ -110,7 +117,7 @@ class Login extends Component<Props, States>{
     
 
 render(){
-    const { username, password, usernameError, passwordError, isPwdView, isLoader } = this.state;
+    const { username, password, usernameError, passwordError, isRemember, isPwdView, isLoader, validErrorMsg } = this.state;
     return(
             <AUX>
                 {isLoader && <Loaders />}
@@ -128,7 +135,7 @@ render(){
                                         </div>
 
                                         <div className="form-group">
-                                            <label htmlFor="userpassword">Password</label>
+                                            <label>Password</label>
                                             <div className="withIcon">
                                                 <Input type={isPwdView ? "text" : "password"} className={!passwordError ? "form-control" : "form-control invalid"} name="password" placeHolder="Enter password" value={password}
                                                     onChange={this.handleChange} />
@@ -140,10 +147,13 @@ render(){
                                         
                                         <div className="form-group row m-t-20">
                                             <div className="col-sm-12">
-                                                <div className="custom-control custom-checkbox">
-                                                    <input type="checkbox" className="custom-control-input" id="customControlInline" />
-                                                    <label className="custom-control-label" htmlFor="customControlInline">Remember me</label>
-                                                </div>
+                                                <label className="container">Remember me
+                                                    <input type="checkbox" defaultChecked={isRemember} onClick={(e: any) => {this.setState({isRemember: e.target.checked})}} />
+                                                    <span className="checkmark"></span>
+                                                </label>
+                                            </div>
+                                            <div className="col-sm-12 text-center">
+                                                {validErrorMsg && <span className="error">{ validErrorMsg } </span>}
                                             </div>
                                         </div>
                                         <div className="form-group row loginBtn">

@@ -8,6 +8,7 @@ import userImg from '../../widgets/images/user.png';
 
 import './layout.scss';
 import { setLocalStorageData, getLocalStorageData, clearLocalStorageData } from '../../../base/localStore';
+import Cookies from 'js-cookie';
 
 type Props = {
     history?: any;
@@ -49,6 +50,7 @@ class TopBar extends Component<Props,States> {
         console.log(this.props.history, 'history');
         setLocalStorageData('isLoggedOut', true);
         clearLocalStorageData('userData');
+        Cookies.remove('userData');
         this.props.history.push('/landing');
     }
 
@@ -75,9 +77,6 @@ class TopBar extends Component<Props,States> {
                     <ul className="list-inline menu-left mb-0">
                         <li className="float-left center button-menu-mobile open-left waves-effect">
                             <img src={menuIcon} alt="Logo" />
-                            {/* <button className="button-menu-mobile open-left waves-effect">
-                                <i className="mdi mdi-menu"></i>
-                            </button> */}
                         </li>
                     </ul>
 
@@ -123,8 +122,8 @@ class TopBar extends Component<Props,States> {
                                     </div>
                                 </DropdownToggle>
                                 <DropdownMenu>
-                                    <DropdownItem onClick={() => this.handleChange('profile')}><i className="mdi mdi-account-circle m-r-5"></i> {userData.fullname}</DropdownItem>
-                                    <DropdownItem onClick={() => this.handleChange('logout')}><i className="mdi mdi-power text-danger"></i> Logout</DropdownItem>
+                                    <DropdownItem onClick={() => this.handleChange('profile')}><i className="fa fa-user-circle"></i> <span className="ml-1">{userData.fullname}</span> </DropdownItem>
+                                    <DropdownItem onClick={() => this.handleChange('logout')}><i className="fa fa-sign-out-alt text-danger"></i> <span className="ml-1"> Logout </span></DropdownItem>
                                 </DropdownMenu>
                             </Dropdown>
                         </div>

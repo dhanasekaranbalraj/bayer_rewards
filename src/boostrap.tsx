@@ -2,6 +2,8 @@ import React, { lazy, Suspense } from 'react';
 import { Route, Switch } from 'react-router-dom';
 import  Loader from './shared/widgets/loader';
 import  {AuthRoute} from "./authRoute";
+import { clearLocalStorageData } from './base/localStore';
+import Cookies from 'js-cookie';
 
 const AppHome = lazy(() =>
   import('./appHome')
@@ -13,6 +15,18 @@ const LandingPage = lazy(() =>
     .then(({ LandingPage }) => ({ default: LandingPage }))
 );
 
+// const data = localStorage.getItem('userData');
+const getCData = Cookies.get('userData');
+console.log(getCData, 'getCData f');
+
+  let isLoggedIn = false;
+  if(getCData){
+    isLoggedIn = JSON.parse(getCData).isRemember;
+  }
+  if(!isLoggedIn){
+    Cookies.remove('userData');
+    clearLocalStorageData('userData');
+  }
 
 export default function mainContents() {
  
