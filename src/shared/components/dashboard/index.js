@@ -1,4 +1,4 @@
-import React , {Component } from 'react';
+import React , {Component, Fragment } from 'react';
 
 import AUX from '../../../hoc/Aux_';
 // import Settings from '../Subpages/Settings';
@@ -8,13 +8,103 @@ import AUX from '../../../hoc/Aux_';
 // import { Scrollbars } from 'react-custom-scrollbars';
 
 // import { Link } from 'react-router-dom';
+import Chart from "react-apexcharts";
+import Radial from "./charts/Radial";
+import Bar from "./charts/Bar";
+import Donut from "./charts/Donut";
+import Line from "./charts/Line";
+import "./dashboard.scss";
 
 class Dashboard extends Component{
- 
+    constructor(props){
+        super(props);
+        this.state={
+            productToggle: true,
+            customerToggle: false,
+            sellingCustomer: [
+                {
+                    "no": 1,
+                    "name":"vidhyaaaa",
+                    "salesachieved" : "25,346",
+                    "targetachieved": 80
+                },
+                {
+                    "no": 2,
+                    "name":"demo2",
+                    "salesachieved" : "15,567",
+                    "targetachieved": 35
+
+                },
+                {
+                    "no": 3,
+                    "name":"demo2",
+                    "salesachieved" : "34,433",
+                    "targetachieved": 60
+                },
+                {
+                    "no": 4,
+                    "name":"demo2",
+                    "salesachieved" : "50,000",
+                    "targetachieved": 20
+
+                },
+                {
+                    "no": 5,
+                    "name":"demo2",
+                    "salesachieved" : "20,433",
+                    "targetachieved": 90
+
+                }
+            ],
+            products: [
+                {
+                    "no": 1,
+                    "name":"Agridexdemo1",
+                    "customers" : "256",
+                    "quantitySold": 70
+                },
+                {
+                    "no": 2,
+                    "name":"Agridexdemo2",
+                    "customers" : "193",
+                    "quantitySold": 80
+                },
+                {
+                    "no": 3,
+                    "name":"AM25",
+                    "customers" : "200",
+                    "quantitySold": 60
+                },
+                {
+                    "no": 4,
+                    "name":"demoprod",
+                    "customers" : "500",
+                    "quantitySold": 45
+                },
+                {
+                    "no": 5,
+                    "name":"product",
+                    "customers" : "200",
+                    "quantitySold": 20
+                }
+            ]
+        }
+    }
+    toggleClick = () => {
+        this.setState({
+            productToggle: !this.state.productToggle,
+            customerToggle: !this.state.customerToggle
+        });
+    }
+
 render(){
+    const { productToggle, customerToggle } = this.state;
+    console.log('prodinitial', productToggle);
+    console.log('customerinitial', customerToggle);
     var myChat = {
         width: '110%'
      };
+      
       
     return(
             <AUX>
@@ -31,40 +121,154 @@ render(){
                     <div className="row">
                         <div className="col-xl-3">
                             <div className="card">
-                                <div className="card-body text-center">
-                                    <h4 className="mt-0 header-title mb-4">Targets Progress</h4>
+                                <div className="card-body">
+                                    <h8 className="mt-0 header-title mb-4 headingText">Targets Progress</h8>
                                     <div id="center_chart">  
-                                    {/* <Piecharts /> */}
+                                    <Radial />
                                     </div>
                                                                     
                                 </div>
                             </div>
                         </div>
-                        <div className="col-xl-5">
+                        <div className="col-xl-6">
                             <div className="card">
-                                <div className="card-body text-center">
-                                    <h4 className="mt-0 header-title mb-4">By Product Group</h4>
+                                <div className="card-body">
+                                    <h8 className="mt-0 header-title mb-4 headingText">By Product Group</h8>
                                     <div id="center_chart">  
+                                    <Bar />
                                     </div>
                                                                     
                                 </div>
                             </div>
                         </div>
-                        <div className="col-xl-4">
+                        <div className="col-xl-3">
                             <div className="card">
-                                <div className="card-body text-center">
-                                    <h4 className="mt-0 header-title mb-4">Overall Scans</h4>
+                                <div className="card-body">
+                                    <h8 className="mt-0 header-title mb-4 headingText">Overall Scans</h8>
                                     <div id="center_chart">  
+                                        <Donut />
                                     </div>
-                                                                    
                                 </div>
                             </div>
                         </div>
                     </div>
+                    <div className="row">
+                        <div className="col-xl-9">
+                            <div className="card col-sm-12">
+                                <div className="card-body">
+                                    <div className="topList">
+                                        <div className="topLeft headingText">
+                                             <h8 className="mt-0 header-title mb-4">Top 5 Selling {productToggle ? "Products" : "Customers"}</h8>
+                                        </div>
+                                        <div className="topRight headingText">
+                                            <button type="button" class={productToggle ? "btn toggleList" : "btn btn-light"} onClick={this.toggleClick}>Products</button>
+                                            <button type="button" class={customerToggle ? "btn toggleList" : "btn btn-light"} onClick={this.toggleClick}>Customers</button>
+                                        </div>
+                                    </div>
+                                    {productToggle ? 
+                                    <div className="table-responsive">
+                                        <table class="table table-borderless">
+                                            <thead>
+                                            <tr>
+                                                <th>No</th>
+                                                <th>Name</th>
+                                                <th>Sales Achieved</th>
+                                                <th>Targets Achieved</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                                {this.state.sellingCustomer ? 
+                                                <>
+                                                   {this.state.sellingCustomer.map((data, i) =>
+                                                        <tr key={`selling-customer-${i}`}>
+                                                            <td>{i+1}</td>
+                                                            <td>{data.name}</td>
+                                                            <td>{data.salesachieved}</td>
+                                                            <td>
+                                                            <div class="progress"> 
+                                                                <div class="progress-bar" role="progressbar" aria-valuenow={data.targetAchieved} aria-valuemin="0" aria-valuemax="100" style={{width: "50%"}}>
+                                                                </div>
+                                                            </div>
+                                                            </td>   
+                                                        </tr>
+                                                    )}
+                                                </> : <div className="col-12 card mt-4">
+                                                        <div className="card-body ">
+                                                            <div className="text-red py-4 text-center headingText">No Data Found</div>
+                                                        </div>
+                                                     </div>
 
+                                                }
+                                         
+                                            </tbody>
+                                        </table>
+                                    </div> : 
+                                    <div className="table-responsive">
+                                        <table class="table table-borderless">
+                                            <thead>
+                                            <tr>
+                                                <th>No</th>
+                                                <th>Name</th>
+                                                <th>Customers</th>
+                                                <th>Quantity Sold</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                                {this.state.products ? 
+                                                <>
+                                                   {this.state.products.map((data, i) =>
+                                                        <tr key={`selling-product-${i}`}>
+                                                            <td>{i+1}</td>
+                                                            <td>{data.name}</td>
+                                                            <td>{data.customers}</td>
+                                                            <td>{data.quantitySold}</td>
+                                                        </tr>
+                                                    )}
+                                                </> : <div className="col-12 card mt-4">
+                                                        <div className="card-body ">
+                                                            <div className="text-red py-4 headingText">No Data Found</div>
+                                                        </div>
+                                                     </div>
 
-
-
+                                                }
+                                         
+                                            </tbody>
+                                        </table>
+                                    </div>   
+                                }
+                                </div>
+                            </div>
+                        </div>
+                        <div className="col-xl-3">
+                            <div className="row">
+                                <div className="card col-sm-12">
+                                    <div className="card-body">
+                                        <h8 className="mt-0 header-title mb-4 headingText">Total Users</h8>
+                                        <div className="totalUsers">
+                                            <div className="distributor">
+                                                <p>164</p>
+                                                <p>Distributors</p>
+                                            </div>
+                                            <div className="retailer">
+                                                <p>23</p>
+                                                <p>Retailers</p>
+                                            </div>  
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="row">
+                            <div className="card col-sm-12">
+                                <div className="card-body">
+                                    <h8 className="mt-0 header-title mb-4 headingText">Top 5 Sales for Geo location</h8>
+                                        <div id="center_chart">  
+                                            <Line />
+                                        </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 {/* <div className="row">
                     <div className="col-xl-3 col-md-6">
