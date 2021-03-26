@@ -11,16 +11,15 @@
 }
 .searchInputRow {
     margin-right: 3%;
-    .input-icons {
-        //width: 100%;
-        // position: relative;
-    }
+    
+    width: 40%;
+       
     .input-field {
         width: 100%;
         padding: 10px;
         padding-left: 35px;
     }
-    .input-icons i {
+    i {
         position: absolute;
     }
     .icon {

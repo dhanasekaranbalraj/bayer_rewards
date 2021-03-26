@@ -296,41 +296,35 @@ class ScanLogs extends Component{
             dropdownOpenFilter: !prevState.dropdownOpenFilter
         }));
     }
-  toggle(event) {
-      this.setState({
-          dropdownOpen: !this.state.dropdownOpen
-      });
-  }
-  handleFilterChange = (e, name, item) => {
-      e.stopPropagation();
-      let val = this.state.selectedFilters;
-      if ( name === 'type') {
-          val[name] = e.target.value;
-      } else {
-          val[name] = item;
-      }
-      this.setState({ selectedFilters : val });
-  }
-  resetFilter = (e) => {
-      e.stopPropagation();
-      this.setState({ 
-          selectedFilters: {
-              'type': 'All',
-              'scanType': 'All',
-              'productGroup': 'All',
-              'status': 'All',
-              'startDate': new Date(),
-              'endDate': new Date()
-          },
-      })
-  }
+    toggle(event) {
+        this.setState({
+            dropdownOpen: !this.state.dropdownOpen
+        });
+    }
+    handleFilterChange = (e, name, item) => {
+        e.stopPropagation();
+        let val = this.state.selectedFilters;
+        if ( name === 'type' || name ==='startDate' || name ==='endDate') {
+            val[name] = e.target.value;
+        } else {
+            val[name] = item;
+        }
+        this.setState({ selectedFilters : val });
+    }
+    resetFilter = (e) => {
+        e.stopPropagation();
+        this.setState({ 
+            selectedFilters: {
+                'type': 'All',
+                'scanType': 'All',
+                'productGroup': 'All',
+                'status': 'All',
+                'startDate': new Date(),
+                'endDate': new Date()
+            },
+        })
+    }
 
-  handleDate = (name, date) => {
-      let val = this.state.selectedFilters;
-      val[name] = date;
-      this.setState({ selectedFilters : val });
-  }
- 
 render(){
     const { isAsc, allScanLogs,dropdownOpenFilter,selectedFilters} = this.state;
 
@@ -345,10 +339,8 @@ render(){
 
                             <div className="col-sm-6 filterSide text-center">
                                 <div className="searchInputRow">
-                                    <div class="input-icons">
-                                        <i class="fa fa-search icon"></i>
-                                        <input class="input-field" type="text" />
-                                    </div> 
+                                    <i class="fa fa-search icon"></i>
+                                    <input placeholder="Search here..." class="input-field" type="text" />
                                 </div>
                                    
                                 <div className="filterRow">
@@ -361,8 +353,8 @@ render(){
                                                 <label>Distributor/Retailer</label>
                                                 <i className="fa fa-filter boxed float-right" aria-hidden="true"></i>
                                                 
-                                                <div className="form-control" onClick={(e)=>e.stopPropagation()}>
-                                                <select className="" onChange={(e)=> this.handleFilterChange(e,"type")} value={selectedFilters.type}>
+                                                <div className="form-group" onClick={(e)=>e.stopPropagation()}>
+                                                <select className="form-control" onChange={(e)=> this.handleFilterChange(e,"type")} value={selectedFilters.type}>
                                                     <option>All</option>
                                                     <option>Distributor</option>
                                                     <option>Retailer</option>
@@ -402,13 +394,12 @@ render(){
                                             </DropdownItem>
                                             <DropdownItem>
                                             <div className="" onClick={(e)=>e.stopPropagation()}>
-                                                <i className="fa far fa-calendar-alt" aria-hidden="true"></i>
-                                                {/* <DatePicker selected={selectedFilters.startDate} onChange={date => this.handleDate('startDate', date)} /> */}
-                                                <input className="form-control" type="datetime-local" value="2011-08-19T13:45:00" id="example-datetime-local-input" />
-
-                                                <label>--</label>
-                                                <i className="fa far fa-calendar-alt" aria-hidden="true"></i>
-                                                {/* <DatePicker selected={selectedFilters.endDate} onChange={date => this.handleDate('endDate', date)} /> */}
+                                                <label className="font-weight-bold">Date Range</label>
+                                                <div>
+                                                    <input type="date" value={selectedFilters.startDate} onChange={(e)=>this.handleFilterChange(e,'startDate','')} style={{width: '45%'}} />
+                                                    <label>---</label>
+                                                    <input type="date" value={selectedFilters.endDate} onChange={(e)=>this.handleFilterChange(e,'endDate','')} style={{width: '45%'}}/>
+                                                </div>
                                             </div>
                                              </DropdownItem>
                                             <DropdownItem>
