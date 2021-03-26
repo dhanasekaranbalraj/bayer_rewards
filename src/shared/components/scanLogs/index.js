@@ -1,7 +1,5 @@
 import React , {Component } from 'react';
-import DatePicker from "react-datepicker";
 import { Dropdown,Button , DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
-import "react-datepicker/dist/react-datepicker.css";
 import AUX from '../../../hoc/Aux_';
 import ToolkitProvider, { Search, CSVExport } from 'react-bootstrap-table2-toolkit';
 import BootstrapTable from 'react-bootstrap-table-next';
@@ -131,7 +129,7 @@ class ScanLogs extends Component{
     handleFilterChange = (e, name, item) => {
         e.stopPropagation();
         let val = this.state.selectedFilters;
-        if ( name === 'type') {
+        if ( name === 'type' || name ==='startDate' || name ==='endDate') {
             val[name] = e.target.value;
         } else {
             val[name] = item;
@@ -150,12 +148,6 @@ class ScanLogs extends Component{
                 'endDate': new Date()
             },
         })
-    }
-
-    handleDate = (name, date) => {
-        let val = this.state.selectedFilters;
-        val[name] = date;
-        this.setState({ selectedFilters : val });
     }
 
 render(){
@@ -221,11 +213,12 @@ render(){
                                             </DropdownItem>
                                             <DropdownItem>
                                             <div className="" onClick={(e)=>e.stopPropagation()}>
-                                                <i className="fa far fa-calendar-alt" aria-hidden="true"></i>
-                                                <DatePicker selected={selectedFilters.startDate} onChange={date => this.handleDate('startDate', date)} />
-                                                <label>--</label>
-                                                <i className="fa far fa-calendar-alt" aria-hidden="true"></i>
-                                                <DatePicker selected={selectedFilters.endDate} onChange={date => this.handleDate('endDate', date)} />
+                                                <label className="font-weight-bold">Date Range</label>
+                                                <div>
+                                                    <input type="date" value={selectedFilters.startDate} onChange={(e)=>this.handleFilterChange(e,'startDate','')} style={{width: '45%'}} />
+                                                    <label>---</label>
+                                                    <input type="date" value={selectedFilters.endDate} onChange={(e)=>this.handleFilterChange(e,'endDate','')} style={{width: '45%'}}/>
+                                                </div>
                                             </div>
                                              </DropdownItem>
                                             <DropdownItem>
