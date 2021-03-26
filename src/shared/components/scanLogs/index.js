@@ -1,47 +1,28 @@
 import React , {Component } from 'react';
+import DatePicker from "react-datepicker";
+import { Dropdown,Button , DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
+import "react-datepicker/dist/react-datepicker.css";
 import AUX from '../../../hoc/Aux_';
 import ToolkitProvider, { Search, CSVExport } from 'react-bootstrap-table2-toolkit';
 import BootstrapTable from 'react-bootstrap-table-next';
 import Loaders from '../../widgets/loader';
+import {sortBy} from "../../../base/utils/tableSort";
 import '../scanLogs/scanLogs.scss';
 
 const { ExportCSVButton } = CSVExport;
-const columns = [{
-    dataField: 'sNo',
-    text: 'S.No'
-  }, {
-    dataField: 'name',
-    text: 'Name'
-  }, {
-    dataField: 'gdCommission',
-    text: 'Gordon Commission (\u20AC)'
-  },
-  , {
-    dataField: 'driverCharges',
-    text: 'Driver Charges (\u20AC)'
-  }, {
-    dataField: 'rideCharges',
-    text: 'Ride Charges (\u20AC)'
-  }, {
-    dataField: 'cancelCharges',
-    text: 'Cancelled Charges (\u20AC)'
-  }, {
-    dataField: 'netPay',
-    text: 'Net to pay (\u20AC)'
-  }
-];
 
 class ScanLogs extends Component{
     constructor(props) {
         super(props)
         this.state = {
-            allRideList: [
+            dropdownOpenFilter: false,
+            allScanLogs: [
                 {
                     'sNo': "1",
                     'name': "mani",
-                    'gdCommission': "test",
+                    'gdCommission': "demo",
                     'driverCharges': "wer",
-                    'rideCharges': "12",
+                    'rideCharges': "17",
                     'cancelCharges': "Total",
                     'netPay': 100
                 },
@@ -57,14 +38,30 @@ class ScanLogs extends Component{
                 {
                     'sNo': "1",
                     'name': "Vijay",
-                    'gdCommission': "test",
+                    'gdCommission': "result",
                     'driverCharges': "wer",
-                    'rideCharges': "12",
+                    'rideCharges': "9",
                     'cancelCharges': "Total",
                     'netPay': 200
                 }
-            ]
+            ],
+            actions: ['All','Distributor','Retailer'],
+            dropDownValue: 'Select action',
+            dropdownOpen: false,
+            scanType: ['All','Send Goods','Receive Goods','Sell to Farmers'],
+            productGroup: ['All','Fungicides','Herbicides'],
+            status: ['All', 'Valid', 'Invalid'],
+            list: ['All', 'Distributor','Retailer'],
+            selectedFilters: {
+                'type': 'All',
+                'scanType': 'All',
+                'productGroup': 'All',
+                'status': 'All',
+                'startDate': new Date(),
+                'endDate': new Date()
+            }
         }
+         
     }
 
     download_csv = (csv, filename) => {
@@ -116,23 +113,54 @@ class ScanLogs extends Component{
         this.export_table_to_csv(html, "table.csv");
     }
 
-    onSort(event, sortKey){
-        /*
-        assuming your data is something like
-        [
-          {accountname:'foo', negotiatedcontractvalue:'bar'},
-          {accountname:'monkey', negotiatedcontractvalue:'spank'},
-          {accountname:'chicken', negotiatedcontractvalue:'dance'},
-        ]
-        */
-        const data = this.state.allRideList;
-        data.sort((a,b) => a[sortKey].localeCompare(b[sortKey]));
-        console.log(data, 'data');
-        this.setState({allRideList: data})
-      }
- 
+    onSort(name, data) {
+          let arrayCopy = sortBy(name, data);
+          this.setState({ allScanLogs: arrayCopy });
+    }
+
+    toggleFilter = () => {
+        this.setState(prevState => ({
+            dropdownOpenFilter: !prevState.dropdownOpenFilter
+        }));
+    }
+    toggle(event) {
+        this.setState({
+            dropdownOpen: !this.state.dropdownOpen
+        });
+    }
+    handleFilterChange = (e, name, item) => {
+        e.stopPropagation();
+        let val = this.state.selectedFilters;
+        if ( name === 'type') {
+            val[name] = e.target.value;
+        } else {
+            val[name] = item;
+        }
+        this.setState({ selectedFilters : val });
+    }
+    resetFilter = (e) => {
+        e.stopPropagation();
+        this.setState({ 
+            selectedFilters: {
+                'type': 'All',
+                'scanType': 'All',
+                'productGroup': 'All',
+                'status': 'All',
+                'startDate': new Date(),
+                'endDate': new Date()
+            },
+        })
+    }
+
+    handleDate = (name, date) => {
+        let val = this.state.selectedFilters;
+        val[name] = date;
+        this.setState({ selectedFilters : val });
+    }
+
 render(){
-    
+    const { allScanLogs,dropdownOpenFilter,selectedFilters} = this.state;
+    console.log('date', this.state.selectedFilters);
     return(
             <AUX>
                 <div className="container-fluid">
@@ -141,65 +169,127 @@ render(){
                             <div className="col-sm-6">
                                 <h4 className="page-title">Scan Logs</h4>
                             </div>
-                            <div className="col-sm-6 text-right">
-                                <button onClick={this.download} >Download</button>
+
+                            <div className="col-sm-6 text-right filterSide">
+                                <div className="filter">
+                                    <Dropdown isOpen={dropdownOpenFilter} toggle={this.toggleFilter}>
+                                        <DropdownToggle>
+                                            <i className="fa fa-filter boxed" aria-hidden="true"></i>
+                                        </DropdownToggle>
+                                        <DropdownMenu right>
+                                            <DropdownItem>
+                                                <label>Distributor/Retailer</label>
+                                                <i className="fa fa-filter boxed float-right" aria-hidden="true"></i>
+                                                <div className="form-control" onClick={(e)=>e.stopPropagation()}>
+                                                <select className="" onChange={(e)=> this.handleFilterChange(e,"type")} value={selectedFilters.type}>
+                                                    <option>All</option>
+                                                    <option>Distributor</option>
+                                                    <option>Retailer</option>
+                                                </select>
+                                                </div>
+                                            </DropdownItem>
+                                            <DropdownItem>
+                                                <label className="font-weight-bold">Scan Logs</label>
+                                                <div>
+                                                    {this.state.scanType.map((item)=>
+                                                    <span className="chipLabel">
+                                                        <Button color={selectedFilters.scanType === item ? "primary rounded-pill" : "btn rounded-pill boxColor"}
+                                                         size="sm" onClick={(e)=> this.handleFilterChange(e,"scanType",item)}>{item}</Button>
+                                                    </span>
+                                                    )}
+                                                </div>
+                                            </DropdownItem>
+                                            <DropdownItem>
+                                                <label className="font-weight-bold">Product Group</label>
+                                                <div>
+                                                    {this.state.productGroup.map((item)=>
+                                                        <Button color={selectedFilters.productGroup === item ? "primary rounded-pill" : "btn rounded-pill boxColor"}
+                                                         size="sm" onClick={(e)=> this.handleFilterChange(e,"productGroup",item)}>{item}</Button>
+                                                    )}
+                                                </div>
+                                            </DropdownItem>
+                                            <DropdownItem>
+                                                <label className="font-weight-bold">Status</label>
+                                                <div>
+                                                {this.state.status.map((item)=>
+                                                    <span className="chipLabel">
+                                                         <Button color={selectedFilters.status === item ? "primary rounded-pill" : "btn rounded-pill boxColor"}
+                                                         size="sm" onClick={(e)=> this.handleFilterChange(e,"status",item)}>{item}</Button>
+                                                    </span>
+                                                    )}
+                                                </div>
+                                            </DropdownItem>
+                                            <DropdownItem>
+                                            <div className="" onClick={(e)=>e.stopPropagation()}>
+                                                <i className="fa far fa-calendar-alt" aria-hidden="true"></i>
+                                                <DatePicker selected={selectedFilters.startDate} onChange={date => this.handleDate('startDate', date)} />
+                                                <label>--</label>
+                                                <i className="fa far fa-calendar-alt" aria-hidden="true"></i>
+                                                <DatePicker selected={selectedFilters.endDate} onChange={date => this.handleDate('endDate', date)} />
+                                            </div>
+                                             </DropdownItem>
+                                            <DropdownItem>
+                                                <div className="filterFooter">
+                                                    <Button color="btn rounded-pill boxColor" size="lg" onClick={(e)=> this.resetFilter(e)}>Reset All</Button>
+                                                    <Button color="btn rounded-pill boxColor" size="lg" onClick={()=> this.saveFilter}>Apply</Button>
+                                                </div>
+                                            </DropdownItem>
+                                        </DropdownMenu>
+                                    </Dropdown>
+                                </div>
+                                <div>
+                                    <button onClick={this.download} >Download</button>
+                                </div>
                             </div>
                         </div>
                     </div>
                     <div className="test">
-                   
-                                    <div>
-                                       
-                                        { this.state.allRideList.length > 0 ?   
-                                            <div className="table-responsive">
-                                                <table className="table table-hover mb-0">
-                                                    <thead>
-                                                        <tr>
-                                                            <th>S.No</th>
-                                                            <th onClick={e => this.onSort(e, 'name')}>Name</th>
-                                                            <th>Header1</th>
-                                                            <th>Header1</th>
-                                                            <th>Header1</th>
-                                                            <th>Header1</th>
-                                                            <th>Header1</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        { this.state.allRideList.map((list,i) => 
-                                                        <>
-                                                            <tr>
-                                                                <td >{i+1}</td>
-                                                                <td>{list.name}</td>
-                                                                <td>{list.gdCommission}  </td>
-                                                                <td>{list.driverCharges} </td>
-                                                                <td>{list.rideCharges} </td>
-                                                                <td>{list.cancelCharges} </td>
-                                                                <td>{list.netPay} jj</td>
-                                                            </tr>
-                                                        
-                                                        </> 
-                                                        )
-                                                        }
-                                                    
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                            :
-                                            this.state.isLoader ? <Loaders /> : 
-                                            <div className="col-12 card mt-4">
-                                                <div className="card-body ">
-                                                    <div className="text-red py-4 text-center">No Data Found</div>
-                                                </div>
-                                            </div>
-                                        }
+                        <div>
+                            { allScanLogs.length > 0 ?   
+                                <div className="table-responsive">
+                                    <table className="table table-hover mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th>S.No</th>
+                                                <th>Name<span className="fa fa-caret-down"  onClick={()=>this.onSort('name', allScanLogs)}></span></th>
+                                                <th>Header1</th>
+                                                <th>Header1</th>
+                                                <th>Header1</th>
+                                                <th>Header1</th>
+                                                <th>Header1</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            { allScanLogs.map((list,i) => 
+                                            <>
+                                                <tr>
+                                                    <td >{i+1}</td>
+                                                    <td>{list.name}</td>
+                                                    <td>{list.gdCommission}  </td>
+                                                    <td>{list.driverCharges} </td>
+                                                    <td>{list.rideCharges} </td>
+                                                    <td>{list.cancelCharges} </td>
+                                                    <td>{list.netPay}</td>
+                                                </tr>
+                                            
+                                            </> 
+                                            )
+                                            }
+                                        
+                                        </tbody>
+                                    </table>
+                                </div>
+                                :
+                                this.state.isLoader ? <Loaders /> : 
+                                <div className="col-12 card mt-4">
+                                    <div className="card-body ">
+                                        <div className="text-red py-4 text-center">No Data Found</div>
                                     </div>
-                                  
+                                </div>
+                            }
+                        </div>
                     </div>
-
-                    
-                   
                 </div>
-           
             </AUX>
         );
     }
