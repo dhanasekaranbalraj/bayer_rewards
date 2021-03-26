@@ -4,66 +4,184 @@ import ToolkitProvider, { Search, CSVExport } from 'react-bootstrap-table2-toolk
 import BootstrapTable from 'react-bootstrap-table-next';
 import Loaders from '../../widgets/loader';
 import '../scanLogs/scanLogs.scss';
+import { UncontrolledCollapse, Collapse, Button, CardBody, Card } from 'reactstrap';
+import { apiURL } from '../../../base/utils/config';
+import { invokeGetAuthService } from '../../../base/service';
+import moment from 'moment';
 
-const { ExportCSVButton } = CSVExport;
-const columns = [{
-    dataField: 'sNo',
-    text: 'S.No'
-  }, {
-    dataField: 'name',
-    text: 'Name'
-  }, {
-    dataField: 'gdCommission',
-    text: 'Gordon Commission (\u20AC)'
-  },
-  , {
-    dataField: 'driverCharges',
-    text: 'Driver Charges (\u20AC)'
-  }, {
-    dataField: 'rideCharges',
-    text: 'Ride Charges (\u20AC)'
-  }, {
-    dataField: 'cancelCharges',
-    text: 'Cancelled Charges (\u20AC)'
-  }, {
-    dataField: 'netPay',
-    text: 'Net to pay (\u20AC)'
-  }
-];
 
 class ScanLogs extends Component{
     constructor(props) {
         super(props)
         this.state = {
+            selectIndex: "",
+            isAsc: true,
+            isRendered: false,
             allRideList: [
                 {
-                    'sNo': "1",
-                    'name': "mani",
-                    'gdCommission': "test",
-                    'driverCharges': "wer",
-                    'rideCharges': "12",
-                    'cancelCharges': "Total",
-                    'netPay': 100
+                    "productlabelid": "62583466963379912311",
+                    "scantype": "Send goods",
+                    "selectedscanneddate": "2021-03-18T00:00:00.000Z",
+                    "scanstatus": "valid",
+                    "reason": "",
+                    "username": "john994",
+                    "isExpand": false
                 },
                 {
-                    'sNo': "1",
-                    'name': "foo",
-                    'gdCommission': "test",
-                    'driverCharges': "wer",
-                    'rideCharges': "12",
-                    'cancelCharges': "Total",
-                    'netPay': 200
+                    "productlabelid": "Behdjdndm",
+                    "scantype": "Send goods",
+                    "selectedscanneddate": "2021-03-18T00:00:00.000Z",
+                    "scanstatus": "invalid",
+                    "reason": "Label ID not found",
+                    "username": "john994",
+                    "isExpand": false
                 },
                 {
-                    'sNo': "1",
-                    'name': "Vijay",
-                    'gdCommission': "test",
-                    'driverCharges': "wer",
-                    'rideCharges': "12",
-                    'cancelCharges': "Total",
-                    'netPay': 200
+                    "productlabelid": "Nfncndnd",
+                    "scantype": "Send goods",
+                    "selectedscanneddate": "2021-03-18T00:00:00.000Z",
+                    "scanstatus": "invalid",
+                    "reason": "Label ID not found",
+                    "username": "john994",
+                    "isExpand": false
+                },
+                {
+                    "productlabelid": "Ekfnmgv",
+                    "scantype": "Send goods",
+                    "selectedscanneddate": "2021-03-18T00:00:00.000Z",
+                    "scanstatus": "invalid",
+                    "reason": "Label ID not found",
+                    "username": "john994",
+                    "isExpand": false
+                },
+                {
+                    "productlabelid": "Hdhdjdkdnsnd",
+                    "scantype": "Receive goods",
+                    "selectedscanneddate": "2021-03-18T00:00:00.000Z",
+                    "scanstatus": "invalid",
+                    "reason": "Label ID not found",
+                    "username": "john994",
+                    "isExpand": false
+                },
+                {
+                    "productlabelid": "625834669633799654",
+                    "scantype": "Receive goods",
+                    "selectedscanneddate": "2021-03-18T00:00:00.000Z",
+                    "scanstatus": "valid",
+                    "reason": "",
+                    "username": "john994",
+                    "isExpand": false
+                },
+                {
+                    "productlabelid": "625834669633799000",
+                    "scantype": "Sell to farmer",
+                    "selectedscanneddate": "2021-03-19T00:00:00.000Z",
+                    "scanstatus": "valid",
+                    "reason": "",
+                    "username": "john994",
+                    "isExpand": false
+                },
+                {
+                    "productlabelid": "Dghh",
+                    "scantype": "Send goods",
+                    "selectedscanneddate": "2021-03-19T00:00:00.000Z",
+                    "scanstatus": "invalid",
+                    "reason": "Label ID not found",
+                    "username": "john994",
+                    "isExpand": false
+                },
+                {
+                    "productlabelid": "Sfgjko",
+                    "scantype": "Send goods",
+                    "selectedscanneddate": "2021-03-19T00:00:00.000Z",
+                    "scanstatus": "invalid",
+                    "reason": "Label ID not found",
+                    "username": "john994",
+                    "isExpand": false
+                },
+                {
+                    "productlabelid": "Hdjdnfjfkfkd",
+                    "scantype": "Send goods",
+                    "selectedscanneddate": "2021-03-19T00:00:00.000Z",
+                    "scanstatus": "invalid",
+                    "reason": "Label ID not found",
+                    "username": "john994",
+                    "isExpand": false
+                },
+                {
+                    "productlabelid": "625834669633799456",
+                    "scantype": "Send goods",
+                    "selectedscanneddate": "2021-03-19T00:00:00.000Z",
+                    "scanstatus": "valid",
+                    "reason": "",
+                    "username": "john994",
+                    "isExpand": false
+                },
+                {
+                    "productlabelid": "625834669633799123",
+                    "scantype": "Send goods",
+                    "selectedscanneddate": "2021-03-19T00:00:00.000Z",
+                    "scanstatus": "valid",
+                    "reason": "",
+                    "username": "john994",
+                    "isExpand": false
+                },
+                {
+                    "productlabelid": "Jrheidnrnied828493",
+                    "scantype": "Send goods",
+                    "selectedscanneddate": "2021-03-19T00:00:00.000Z",
+                    "scanstatus": "invalid",
+                    "reason": "Label ID not found",
+                    "username": "john994",
+                    "isExpand": false
+                },
+                {
+                    "productlabelid": "521354588321156899",
+                    "scantype": "Send goods",
+                    "selectedscanneddate": "2021-03-19T00:00:00.000Z",
+                    "scanstatus": "invalid",
+                    "reason": "Label ID not found",
+                    "username": "john994",
+                    "isExpand": false
+                },
+                {
+                    "productlabelid": "Asdfasdf",
+                    "scantype": "Send goods",
+                    "selectedscanneddate": "2021-03-23T00:00:00.000Z",
+                    "scanstatus": "invalid",
+                    "reason": "Label ID not found",
+                    "username": "john994",
+                    "isExpand": false
                 }
             ]
+        }
+    }
+    componentDidMount(){
+        this.getScanLogs();
+    }
+
+    downloadExcel = () => {
+        let tableId= document.getElementById('tableData').id;
+        let fileName = "";
+        let excelFileName='excel_table_data';
+        let TableDataType = 'application/vnd.ms-excel';
+        let selectTable = document.getElementById(tableId);
+        let htmlTable = selectTable.outerHTML.replace(/ /g, '%20');
+        
+        fileName = fileName?fileName+'.xls':excelFileName+'.xls';
+        var excelFileURL = document.createElement("a");
+        document.body.appendChild(excelFileURL);
+        
+        if(navigator.msSaveOrOpenBlob){
+            var blob = new Blob(['\ufeff', htmlTable], {
+                type: TableDataType
+            });
+            navigator.msSaveOrOpenBlob( blob, fileName);
+        }else{
+            
+            excelFileURL.href = 'data:' + TableDataType + ', ' + htmlTable;
+            excelFileURL.download = fileName;
+            excelFileURL.click();
         }
     }
 
@@ -111,7 +229,6 @@ class ScanLogs extends Component{
     }
     
     download = () => {
-        alert();
         let html = document.querySelector("table").outerHTML;
         this.export_table_to_csv(html, "table.csv");
     }
@@ -128,11 +245,31 @@ class ScanLogs extends Component{
         const data = this.state.allRideList;
         data.sort((a,b) => a[sortKey].localeCompare(b[sortKey]));
         console.log(data, 'data');
-        this.setState({allRideList: data})
-      }
+        this.setState({allRideList: data, isAsc: !this.state.isAsc})
+    }
+
+    getScanLogs = () => {
+        const { scanLogs } = apiURL;
+        this.setState({isLoader: true});
+        invokeGetAuthService(scanLogs).then((response) => {
+            console.log(response, 'response');
+            this.setState({isLoader: false, validErrorMsg: ""});
+
+        }).catch((error) => {
+            this.setState({isLoader: false, validErrorMsg: error.message });
+            console.log(error, 'error');
+            // toastError(error.message);
+        });
+        
+    }
+
+    handleExpand = (data) => {
+        data.isExpand = !data.isExpand;
+        this.setState({isRendered: true});
+    }
  
 render(){
-    
+    const { isAsc } = this.state;
     return(
             <AUX>
                 <div className="container-fluid">
@@ -142,58 +279,109 @@ render(){
                                 <h4 className="page-title">Scan Logs</h4>
                             </div>
                             <div className="col-sm-6 text-right">
-                                <button onClick={this.download} >Download</button>
+                                <button className="btn btn-primary downloadBtn" onClick={this.download} >
+                                    <i className="fa fa-download mr-2"></i> <span>Download</span>
+                                </button>
                             </div>
                         </div>
                     </div>
                     <div className="test">
-                   
-                                    <div>
-                                       
-                                        { this.state.allRideList.length > 0 ?   
-                                            <div className="table-responsive">
-                                                <table className="table table-hover mb-0">
-                                                    <thead>
-                                                        <tr>
-                                                            <th>S.No</th>
-                                                            <th onClick={e => this.onSort(e, 'name')}>Name</th>
-                                                            <th>Header1</th>
-                                                            <th>Header1</th>
-                                                            <th>Header1</th>
-                                                            <th>Header1</th>
-                                                            <th>Header1</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        { this.state.allRideList.map((list,i) => 
-                                                        <>
-                                                            <tr>
-                                                                <td >{i+1}</td>
-                                                                <td>{list.name}</td>
-                                                                <td>{list.gdCommission}  </td>
-                                                                <td>{list.driverCharges} </td>
-                                                                <td>{list.rideCharges} </td>
-                                                                <td>{list.cancelCharges} </td>
-                                                                <td>{list.netPay} jj</td>
-                                                            </tr>
-                                                        
-                                                        </> 
-                                                        )
-                                                        }
-                                                    
-                                                    </tbody>
-                                                </table>
+                    { this.state.allRideList.length > 0 ?   
+
+                    <div class="table-responsive">
+                        <table class="table" id="tableData">
+                            <thead>
+                            <tr>
+                                <th>
+                                    Label ID
+                                    <i className={`fa ${ isAsc ? 'fa-angle-down' : 'fa-angle-up'} ml-3`} onClick={e => this.onSort(e, 'productlabelid')}></i>
+                                </th>
+                                <th>Customer Name</th>
+                                <th>Customer ID</th>
+                                <th>Product</th>
+                                <th>Quantity</th>
+                                <th>Scan Type</th>
+                                <th>Sold To</th>
+                                <th>Scan Date</th>
+                                <th width="10%">Quick Action</th>
+
+                            </tr>
+                            </thead>
+                            <tbody>
+                            { this.state.allRideList.map((list,i) => 
+                                <AUX key={i}>
+                                    <tr style={list.scanstatus === 'valid' ? {borderLeft: '5px solid #89D329'} : {borderLeft: '5px solid #FF4848' }}
+                                        onClick={() => this.handleExpand(list) } >
+                                        <td >{list.productlabelid}</td>
+                                        <td>{list.username}  </td>
+                                        <td>{list.username}  </td>
+                                        <td>{list.username}  </td>
+                                        <td>{list.username}  </td>
+                                        <td>{list.scantype}  </td>
+                                        <td>{list.username}  </td>
+                                        <td>{moment(list.selectedscanneddate).format('DD-MM-YYYY')}  </td>
+                                        <td width="10%" align="center">
+                                            {
+                                                list.isExpand ? <i className="fa fa-angle-down"></i> 
+                                                : <i className="fa fa-angle-up"></i>
+                                            }
+                                        </td>
+                                        
+                                    </tr>
+                                    { list.isExpand &&
+                                        <div style={{display: 'grid'}} > 
+                                            <div className={list.scanstatus === 'valid' ? "validBoxShadow" : "inValidBoxShadow"}>
+                                                <div class="row">
+                                                    <div class="col-3">
+                                                        Batch : 89899898998
+                                                    </div>
+                                                    <div class="col-3">
+                                                        Expiry Date : 23 Dec 2021
+                                                    </div>
+                                                    <div class="col-3">
+                                                        Product group : BB-Bayer
+                                                    </div>
+                                                    <div class="col-3">
+                                                        Scan ID : #67677677
+                                                    </div>
+                                                </div>
+                            
                                             </div>
-                                            :
-                                            this.state.isLoader ? <Loaders /> : 
-                                            <div className="col-12 card mt-4">
-                                                <div className="card-body ">
-                                                    <div className="text-red py-4 text-center">No Data Found</div>
+                                            {/* <div style={{display: 'table-cell'}}>
+                                                <div class="row d-flex">
+                                                    <div class="col-4">label</div>
+                                                    <div class="col-4">value 4</div>
                                                 </div>
                                             </div>
-                                        }
-                                    </div>
-                                  
+                                            <div style={{display: 'table-cell'}}>
+                                                <div class="row d-flex">
+                                                    <div class="col-4">label</div>
+                                                    <div class="col-6">value 4</div>
+                                                </div>
+                                            </div>
+                                            <div style={{display: 'table-cell'}}>
+                                                
+                                            </div> */}
+                                        </div>
+                                    }
+                                    
+                                </AUX>
+                            )}
+      
+
+                            </tbody>
+                        </table>
+                    </div>
+                    :
+                        this.state.isLoader ? <Loaders /> : 
+                        <div className="col-12 card mt-4">
+                            <div className="card-body ">
+                                <div className="text-red py-4 text-center">No Data Found</div>
+                            </div>
+                        </div>
+                    }
+                   
+                   
                     </div>
 
                     
