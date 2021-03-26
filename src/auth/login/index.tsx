@@ -156,9 +156,9 @@ render(){
                                                 {validErrorMsg && <span className="error">{ validErrorMsg } </span>}
                                             </div>
                                         </div>
-                                        <div className="form-group row loginBtn">
+                                        <div className="form-group row loginBtnRow">
                                             <div className="col-sm-12 text-center">
-                                                <button className="btn btn-secondary form-control w-md waves-effect waves-light" type="button"
+                                                <button className="btn btn-secondary loginBtn form-control w-md waves-effect waves-light" type="button"
                                                     onClick={this.login}>Login</button>
                                             </div>
                                         </div>
