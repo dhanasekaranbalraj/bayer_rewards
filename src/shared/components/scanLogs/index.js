@@ -22,7 +22,6 @@ class ScanLogs extends Component{
             allScanLogs: [],
             actions: ['All','Distributor','Retailer'],
             dropDownValue: 'Select action',
-            dropdownOpen: false,
             scanType: ['All','Send Goods','Receive Goods','Sell to Farmers'],
             productGroup: ['All','Fungicides','Herbicides'],
             status: ['All', 'Valid', 'Invalid'],
@@ -32,9 +31,10 @@ class ScanLogs extends Component{
                 'scanType': 'All',
                 'productGroup': 'All',
                 'status': 'All',
-                'startDate': new Date(),
-                'endDate': new Date()
-            }
+                'startDate': new Date().toISOString().substr(0, 10),
+                'endDate': new Date().toISOString().substr(0, 10)
+            },
+            dateErrMsg: ''
         }
          
     }
@@ -143,21 +143,38 @@ class ScanLogs extends Component{
             dropdownOpenFilter: !prevState.dropdownOpenFilter
         }));
     }
-    toggle(event) {
-        this.setState({
-            dropdownOpen: !this.state.dropdownOpen
-        });
-    }
     handleFilterChange = (e, name, item) => {
         e.stopPropagation();
         let val = this.state.selectedFilters;
-        if ( name === 'type' || name ==='startDate' || name ==='endDate') {
+        let flag = false;
+        this.state.dateErrMsg = '';
+        if ( name === 'type') {
             val[name] = e.target.value;
+            flag = true;
+        } else if (name === 'startDate') {
+            if( e.target.value <= val.endDate){
+                val[name] = e.target.value;
+                flag = true;
+            } else {
+                this.setState({ dateErrMsg : 'Start date should be lesser than End Date' });
+            }
+        } 
+        else if ( name === 'endDate') {
+            if( e.target.value >= val.startDate){
+                val[name] = e.target.value;
+                flag = true;
+            } else {
+                this.setState({ dateErrMsg : 'End Date should be lesser than Start Date' });
+            }
         } else {
             val[name] = item;
+            flag = true;
         }
-        this.setState({ selectedFilters : val });
+        if (flag) {
+            this.setState({ selectedFilters : val });
+        }
     }
+
     resetFilter = (e) => {
         e.stopPropagation();
         this.setState({ 
@@ -166,14 +183,14 @@ class ScanLogs extends Component{
                 'scanType': 'All',
                 'productGroup': 'All',
                 'status': 'All',
-                'startDate': new Date(),
-                'endDate': new Date()
+                 'startDate': new Date().toISOString().substr(0, 10),
+                'endDate': new Date().toISOString().substr(0, 10)
             },
         })
     }
 
 render(){
-    const { isAsc, allScanLogs,dropdownOpenFilter,selectedFilters, isLoader} = this.state;
+    const { isAsc, allScanLogs,dropdownOpenFilter,selectedFilters, isLoader, dateErrMsg} = this.state;
 
     return(
             <AUX>
@@ -252,6 +269,7 @@ render(){
                                                     <Button color="btn rounded-pill boxColor" size="md" onClick={(e)=> this.resetFilter(e)}>Reset All</Button>
                                                     <Button color="btn activeColor rounded-pill boxColor" size="md" onClick={()=> this.saveFilter}>Apply</Button>
                                                 </div>
+                                                {dateErrMsg && <span className="error">{ dateErrMsg } </span>}
                                             </div>
                                         </DropdownMenu>
                                     </Dropdown>
