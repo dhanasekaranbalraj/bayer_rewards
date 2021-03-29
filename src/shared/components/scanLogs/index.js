@@ -8,6 +8,7 @@ import { apiURL } from '../../../base/utils/config';
 import { invokeGetAuthService } from '../../../base/service';
 import moment from 'moment';
 import filterIcon from '../../widgets/icons/filter_icon.svg'
+import Loader from '../../widgets/loader';
 
 
 class ScanLogs extends Component{
@@ -17,143 +18,8 @@ class ScanLogs extends Component{
             selectIndex: "",
             isAsc: true,
             isRendered: false,
-            allScanLogs: [
-                {
-                    "productlabelid": "62583466963379912311",
-                    "scantype": "Send goods",
-                    "selectedscanneddate": "2021-03-18T00:00:00.000Z",
-                    "scanstatus": "valid",
-                    "reason": "",
-                    "username": "john994",
-                    "isExpand": false
-                },
-                {
-                    "productlabelid": "Behdjdndm",
-                    "scantype": "Send goods",
-                    "selectedscanneddate": "2021-03-18T00:00:00.000Z",
-                    "scanstatus": "invalid",
-                    "reason": "Label ID not found",
-                    "username": "john994",
-                    "isExpand": false
-                },
-                {
-                    "productlabelid": "Nfncndnd",
-                    "scantype": "Send goods",
-                    "selectedscanneddate": "2021-03-18T00:00:00.000Z",
-                    "scanstatus": "invalid",
-                    "reason": "Label ID not found",
-                    "username": "john994",
-                    "isExpand": false
-                },
-                {
-                    "productlabelid": "Ekfnmgv",
-                    "scantype": "Send goods",
-                    "selectedscanneddate": "2021-03-18T00:00:00.000Z",
-                    "scanstatus": "invalid",
-                    "reason": "Label ID not found",
-                    "username": "john994",
-                    "isExpand": false
-                },
-                {
-                    "productlabelid": "Hdhdjdkdnsnd",
-                    "scantype": "Receive goods",
-                    "selectedscanneddate": "2021-03-18T00:00:00.000Z",
-                    "scanstatus": "invalid",
-                    "reason": "Label ID not found",
-                    "username": "john994",
-                    "isExpand": false
-                },
-                {
-                    "productlabelid": "625834669633799654",
-                    "scantype": "Receive goods",
-                    "selectedscanneddate": "2021-03-18T00:00:00.000Z",
-                    "scanstatus": "valid",
-                    "reason": "",
-                    "username": "john994",
-                    "isExpand": false
-                },
-                {
-                    "productlabelid": "625834669633799000",
-                    "scantype": "Sell to farmer",
-                    "selectedscanneddate": "2021-03-19T00:00:00.000Z",
-                    "scanstatus": "valid",
-                    "reason": "",
-                    "username": "john994",
-                    "isExpand": false
-                },
-                {
-                    "productlabelid": "Dghh",
-                    "scantype": "Send goods",
-                    "selectedscanneddate": "2021-03-19T00:00:00.000Z",
-                    "scanstatus": "invalid",
-                    "reason": "Label ID not found",
-                    "username": "john994",
-                    "isExpand": false
-                },
-                {
-                    "productlabelid": "Sfgjko",
-                    "scantype": "Send goods",
-                    "selectedscanneddate": "2021-03-19T00:00:00.000Z",
-                    "scanstatus": "invalid",
-                    "reason": "Label ID not found",
-                    "username": "john994",
-                    "isExpand": false
-                },
-                {
-                    "productlabelid": "Hdjdnfjfkfkd",
-                    "scantype": "Send goods",
-                    "selectedscanneddate": "2021-03-19T00:00:00.000Z",
-                    "scanstatus": "invalid",
-                    "reason": "Label ID not found",
-                    "username": "john994",
-                    "isExpand": false
-                },
-                {
-                    "productlabelid": "625834669633799456",
-                    "scantype": "Send goods",
-                    "selectedscanneddate": "2021-03-19T00:00:00.000Z",
-                    "scanstatus": "valid",
-                    "reason": "",
-                    "username": "john994",
-                    "isExpand": false
-                },
-                {
-                    "productlabelid": "625834669633799123",
-                    "scantype": "Send goods",
-                    "selectedscanneddate": "2021-03-19T00:00:00.000Z",
-                    "scanstatus": "valid",
-                    "reason": "",
-                    "username": "john994",
-                    "isExpand": false
-                },
-                {
-                    "productlabelid": "Jrheidnrnied828493",
-                    "scantype": "Send goods",
-                    "selectedscanneddate": "2021-03-19T00:00:00.000Z",
-                    "scanstatus": "invalid",
-                    "reason": "Label ID not found",
-                    "username": "john994",
-                    "isExpand": false
-                },
-                {
-                    "productlabelid": "521354588321156899",
-                    "scantype": "Send goods",
-                    "selectedscanneddate": "2021-03-19T00:00:00.000Z",
-                    "scanstatus": "invalid",
-                    "reason": "Label ID not found",
-                    "username": "john994",
-                    "isExpand": false
-                },
-                {
-                    "productlabelid": "Asdfasdf",
-                    "scantype": "Send goods",
-                    "selectedscanneddate": "2021-03-23T00:00:00.000Z",
-                    "scanstatus": "invalid",
-                    "reason": "Label ID not found",
-                    "username": "john994",
-                    "isExpand": false
-                }
-            ],
+            pageNo: 1,
+            allScanLogs: [],
             actions: ['All','Distributor','Retailer'],
             dropDownValue: 'Select action',
             dropdownOpen: false,
@@ -249,41 +115,22 @@ class ScanLogs extends Component{
         this.export_table_to_csv(html, "table.csv");
     }
     
-    // onSort(event, sortKey){
-    //     /*
-    //     assuming your data is something like
-    //     [
-    //       {accountname:'foo', negotiatedcontractvalue:'bar'},
-    //       {accountname:'monkey', negotiatedcontractvalue:'spank'},
-    //       {accountname:'chicken', negotiatedcontractvalue:'dance'},
-    //     ]
-    //     */
-    //     const data = this.state.allRideList;
-    //     data.sort((a,b) => a[sortKey].localeCompare(b[sortKey]));
-    //     console.log(data, 'data');
-    //     this.setState({allRideList: data, isAsc: !this.state.isAsc})
-    // }
-
     getScanLogs = () => {
         const { scanLogs } = apiURL;
         this.setState({isLoader: true});
-        invokeGetAuthService(scanLogs).then((response) => {
+        invokeGetAuthService(scanLogs,this.state.pageNo).then((response) => {
             console.log(response, 'response');
-            this.setState({isLoader: false, validErrorMsg: ""});
-
+            this.setState({isLoader: false, allScanLogs: response.body.userResponse});
         }).catch((error) => {
-            this.setState({isLoader: false, validErrorMsg: error.message });
+            this.setState({isLoader: false});
             console.log(error, 'error');
-            // toastError(error.message);
         });
-        
     }
 
     handleExpand = (data) => {
         data.isExpand = !data.isExpand;
         this.setState({isRendered: true});
     }
-
 
     onSort(name, data) {
         let response = sortBy(name, data);
@@ -326,10 +173,11 @@ class ScanLogs extends Component{
     }
 
 render(){
-    const { isAsc, allScanLogs,dropdownOpenFilter,selectedFilters} = this.state;
+    const { isAsc, allScanLogs,dropdownOpenFilter,selectedFilters, isLoader} = this.state;
 
     return(
             <AUX>
+                {isLoader && <Loader />}
                 <div className="container-fluid card">
                     <div className="page-title-box mt-2">
                         <div className="row align-items-center">
@@ -349,65 +197,62 @@ render(){
                                             { !dropdownOpenFilter && <img src={filterIcon} width="17" alt="filter" /> }
                                         </DropdownToggle>
                                         <DropdownMenu right>
-                                            <DropdownItem>
-                                                <label>Distributor/Retailer</label>
-                                                <i className="fa fa-filter boxed float-right" aria-hidden="true"></i>
-                                                
+                                            <div className="p-3">
+                                                <label className="font-weight-bold">Distributor / Retailer</label>
+                                                <i className="fa fa-filter boxed float-right" aria-hidden="true" onClick={this.toggleFilter}></i>
                                                 <div className="form-group" onClick={(e)=>e.stopPropagation()}>
-                                                <select className="form-control" onChange={(e)=> this.handleFilterChange(e,"type")} value={selectedFilters.type}>
+                                                <select className="form-control filterDropdown" onChange={(e)=> this.handleFilterChange(e,"type")} value={selectedFilters.type}>
                                                     <option>All</option>
                                                     <option>Distributor</option>
                                                     <option>Retailer</option>
                                                 </select>
                                                 </div>
-                                            </DropdownItem>
-                                            <DropdownItem>
+                                            
                                                 <label className="font-weight-bold">Scan Logs</label>
-                                                <div>
+                                                <div className="pt-1">
                                                     {this.state.scanType.map((item)=>
-                                                    <span className="chipLabel">
-                                                        <Button color={selectedFilters.scanType === item ? "primary rounded-pill" : "btn rounded-pill boxColor"}
-                                                         size="sm" onClick={(e)=> this.handleFilterChange(e,"scanType",item)}>{item}</Button>
-                                                    </span>
+                                                        <span className="mr-2">
+                                                            <Button color={selectedFilters.scanType === item ? "btn activeColor rounded-pill" : "btn rounded-pill boxColor"}
+                                                                size="sm" onClick={(e)=> this.handleFilterChange(e,"scanType",item)}>{item}</Button>
+                                                        </span>
                                                     )}
                                                 </div>
-                                            </DropdownItem>
-                                            <DropdownItem>
-                                                <label className="font-weight-bold">Product Group</label>
-                                                <div>
+                                               
+                                            
+                                                <label className="font-weight-bold pt-2">Product Group</label>
+                                                <div className="pt-1">
                                                     {this.state.productGroup.map((item)=>
-                                                        <Button color={selectedFilters.productGroup === item ? "primary rounded-pill" : "btn rounded-pill boxColor"}
-                                                         size="sm" onClick={(e)=> this.handleFilterChange(e,"productGroup",item)}>{item}</Button>
+                                                        <span className="mr-2 chipLabel">
+                                                            <Button color={selectedFilters.productGroup === item ? "btn activeColor rounded-pill" : "btn rounded-pill boxColor"}
+                                                            size="sm" onClick={(e)=> this.handleFilterChange(e,"productGroup",item)}>{item}</Button>
+                                                        </span>
                                                     )}
                                                 </div>
-                                            </DropdownItem>
-                                            <DropdownItem>
-                                                <label className="font-weight-bold">Status</label>
-                                                <div>
-                                                {this.state.status.map((item)=>
-                                                    <span className="chipLabel">
-                                                         <Button color={selectedFilters.status === item ? "primary rounded-pill" : "btn rounded-pill boxColor"}
-                                                         size="sm" onClick={(e)=> this.handleFilterChange(e,"status",item)}>{item}</Button>
-                                                    </span>
+                                           
+                                                <label className="font-weight-bold pt-2">Status</label>
+                                                <div className="pt-1">
+                                                    {this.state.status.map((item)=>
+                                                        <span className="mr-2">
+                                                            <Button color={selectedFilters.status === item ? "btn activeColor rounded-pill" : "btn rounded-pill boxColor"}
+                                                            size="sm" onClick={(e)=> this.handleFilterChange(e,"status",item)}>{item}</Button>
+                                                        </span>
                                                     )}
                                                 </div>
-                                            </DropdownItem>
-                                            <DropdownItem>
-                                            <div className="" onClick={(e)=>e.stopPropagation()}>
-                                                <label className="font-weight-bold">Date Range</label>
-                                                <div>
-                                                    <input type="date" value={selectedFilters.startDate} onChange={(e)=>this.handleFilterChange(e,'startDate','')} style={{width: '45%'}} />
-                                                    <label>---</label>
-                                                    <input type="date" value={selectedFilters.endDate} onChange={(e)=>this.handleFilterChange(e,'endDate','')} style={{width: '45%'}}/>
+                                            
+                                                {/* <div className="" onClick={(e)=>e.stopPropagation()}> */}
+                                                    <label className="font-weight-bold pt-2">Date Range</label>
+                                                    <div className="d-flex">
+                                                        <input type="date" className="form-control" value={selectedFilters.startDate} onChange={(e)=>this.handleFilterChange(e,'startDate','')} />
+                                                        <div className="p-2">-</div>
+                                                        <input type="date" className="form-control" value={selectedFilters.endDate} onChange={(e)=>this.handleFilterChange(e,'endDate','')} />
+                                                    </div>
+                                                {/* </div> */}
+                                            
+                                                <div className="filterFooter pt-4">
+                                                    <Button color="btn rounded-pill boxColor" size="md" onClick={(e)=> this.resetFilter(e)}>Reset All</Button>
+                                                    <Button color="btn activeColor rounded-pill boxColor" size="md" onClick={()=> this.saveFilter}>Apply</Button>
                                                 </div>
                                             </div>
-                                             </DropdownItem>
-                                            <DropdownItem>
-                                                <div className="filterFooter">
-                                                    <Button color="btn rounded-pill boxColor" size="lg" onClick={(e)=> this.resetFilter(e)}>Reset All</Button>
-                                                    <Button color="btn rounded-pill boxColor" size="lg" onClick={()=> this.saveFilter}>Apply</Button>
-                                                </div>
-                                            </DropdownItem>
                                         </DropdownMenu>
                                     </Dropdown>
                                 </div>

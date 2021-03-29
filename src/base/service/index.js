@@ -83,17 +83,18 @@ export function invokeGetService(path) {
 };
 
 //Get method with auth
-export function invokeGetAuthService(path) {
+export function invokeGetAuthService(path,page) {
   return new Promise(function (resolve, reject) {
     const data =  getLocalStorageData('userData') ? JSON.parse(getLocalStorageData('userData')) : "";
     const URL = configApp.env;
     const config = {
       method: 'GET',
       params: {
-        territory: 'PALOPO'
+        territory: 'PALOPO',
+        page: page
       },
       headers: {
-        'Authorization': data.accessToken
+        'x-access-token': data.accessToken
       }
     };
     axios.create({

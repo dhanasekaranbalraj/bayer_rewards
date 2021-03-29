@@ -60,6 +60,9 @@
         top: -30px !important;
         left: 5px !important;
     }
+    .form-group .filterDropdown {
+        margin-bottom: 0;
+    }   
 }
 .chip {
     display: inline-block;
@@ -85,14 +88,24 @@
     justify-content: space-evenly;
     align-items: center;
   }
-  .boxColor {
-      border-color: lightgrey;
+  
+  .activeColor {
+    background-color: $appSecondary;
+    color: $white;
   }
+  .activeColor:hover {
+    background-color: $secondary;
+    color: $white;
+  }
+  .boxColor {
+    border-color: lightgrey;
+}
 
 
 .downloadBtn {
     // width: calc(100vh - 280px) !important;
     width: 165px;
+    background-color: $primary;
 }
 table {
     display: flex;
