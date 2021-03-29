@@ -141,7 +141,7 @@
     position  : absolute;
     transform : translate(-50%, -50%);
 }
-.getStartedBtn .form-control {
+.getStartedBtnRow .form-control {
     background: $secondary 0% 0% no-repeat padding-box;
     border-radius: 30px !important;
     text-align: center;
@@ -150,9 +150,7 @@
     color: #FFFFFF;
     opacity: 1;
 }
-.btn-secondary {
-    // background-color: $secondary;
-    // border: 1px solid gray;
+.getStartedBtn {
     color: #fff;
     background-color: $secondary !important;
     border-color: #6c757d;

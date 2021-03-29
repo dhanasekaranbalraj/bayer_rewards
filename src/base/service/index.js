@@ -1,6 +1,8 @@
 
 import axios from 'axios';
 import { configApp } from '../utils/config';
+import { getLocalStorageData } from '../../base/localStore';
+
 
 //Post method without auth
 export function invokePostService(path,reqObj)  {
@@ -82,21 +84,28 @@ export function invokeGetService(path) {
 
 //Get method with auth
 export function invokeGetAuthService(path) {
-    return new Promise(function (resolve, reject) {
-      const URL = configApp.env;
-      const config = {
-        method: 'GET',
-      };
-      axios.create({
-        baseURL: URL + path,
-      })(config)
-        .then((response) => {
-          resolve(response.data);
-        })
-        .catch((err) => {
-          if(err.response){
-            reject(err.response.data);
-          }
-        });
-    });
-  };
+  return new Promise(function (resolve, reject) {
+    const data =  getLocalStorageData('userData') ? JSON.parse(getLocalStorageData('userData')) : "";
+    const URL = configApp.env;
+    const config = {
+      method: 'GET',
+      params: {
+        territory: 'PALOPO'
+      },
+      headers: {
+        'Authorization': data.accessToken
+      }
+    };
+    axios.create({
+      baseURL: URL + path, 
+    })(config)
+      .then((response) => {
+        resolve(response.data);
+      })
+      .catch((err) => {
+        if(err.response){
+          reject(err.response.data);
+        }
+      });
+  });
+};

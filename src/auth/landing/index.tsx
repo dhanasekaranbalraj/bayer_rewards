@@ -163,9 +163,9 @@ render(){
                                                     Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.                                        </p>
                                                                                         
                                                 </div>
-                                                <div className="form-group row getStartedBtn" onClick={this.toLogin}>
+                                                <div className="form-group row getStartedBtnRow" onClick={this.toLogin}>
                                                     <div className="col-sm-5 text-left">
-                                                        <button className="btn btn-secondary form-control w-md waves-effect waves-light" type="button">Get started</button>
+                                                        <button className="btn btn-secondary getStartedBtn form-control w-md waves-effect waves-light" type="button">Get started</button>
                                                     </div>
                                                 </div>
                                             </>

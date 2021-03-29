@@ -15,7 +15,7 @@ const LandingPage = lazy(() =>
     .then(({ LandingPage }) => ({ default: LandingPage }))
 );
 
-// const data = localStorage.getItem('userData');
+const getLData = localStorage.getItem('userData');
 const getCData = Cookies.get('userData');
 console.log(getCData, 'getCData f');
 
@@ -23,7 +23,7 @@ console.log(getCData, 'getCData f');
   if(getCData){
     isLoggedIn = JSON.parse(getCData).isRemember;
   }
-  if(!isLoggedIn){
+  if(!isLoggedIn && !getLData){
     Cookies.remove('userData');
     clearLocalStorageData('userData');
   }
@@ -33,9 +33,6 @@ export default function mainContents() {
   return (
     <Suspense fallback={<Loader />}>
       <Switch>
-        {/* <Route exact path='/'>
-          <Redirect to='/'/>
-        </Route> */}
         <Route path={`/landing`} component={LandingPage} />
         {/* <Route path={`/login`} component={Login} /> */}
         <AuthRoute component={AppHome} />
