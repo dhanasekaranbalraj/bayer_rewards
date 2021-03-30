@@ -4,6 +4,6 @@ export const configApp = {
 }
 export const apiURL = {
     login: "user/login",
-    scanLogs: "user/getScanTransactionbyTerritory"
+    scanLogs: "user/getScanTransactionbyTerritorySearch"
 
 }

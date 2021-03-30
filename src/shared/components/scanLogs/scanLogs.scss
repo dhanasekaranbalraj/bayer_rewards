@@ -152,6 +152,8 @@ tbody tr {
 
 .table td {
     border: none !important;
+    height: 50px;
+  vertical-align: center;
 }
 
 tbody { height: 400px; overflow-y: scroll }

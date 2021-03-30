@@ -34,8 +34,10 @@ class ScanLogs extends Component{
                 'startDate': new Date().toISOString().substr(0, 10),
                 'endDate': new Date().toISOString().substr(0, 10)
             },
-            dateErrMsg: ''
+            dateErrMsg: '',
+            searchText: ''
         }
+        this.timeOut = 0;
          
     }
     componentDidMount(){
@@ -118,9 +120,13 @@ class ScanLogs extends Component{
     getScanLogs = () => {
         const { scanLogs } = apiURL;
         this.setState({isLoader: true});
-        invokeGetAuthService(scanLogs,this.state.pageNo).then((response) => {
+        const data = {
+            pageNo: this.state.pageNo,
+            searchText: this.state.searchText
+        }
+        invokeGetAuthService(scanLogs,data).then((response) => {
             console.log(response, 'response');
-            this.setState({isLoader: false, allScanLogs: response.body.userResponse});
+            this.setState({isLoader: false, allScanLogs: Object.keys(response.body).length !== 0 ? response.body.rows : []});
         }).catch((error) => {
             this.setState({isLoader: false});
             console.log(error, 'error');
@@ -189,8 +195,22 @@ class ScanLogs extends Component{
         })
     }
 
+    handleSearch = (e) => {
+        let searchText = e.target.value;
+        this.setState({searchText: searchText});
+        if(this.timeOut){
+            clearTimeout(this.timeOut);
+        }
+        this.timeOut = setTimeout(() => {
+            this.getScanLogs();
+        }, 1000);
+    }
+    applyFilter = () => {
+        console.log(this.state, 'hjhjj');
+    }
+
 render(){
-    const { isAsc, allScanLogs,dropdownOpenFilter,selectedFilters, isLoader, dateErrMsg} = this.state;
+    const { isAsc, allScanLogs,dropdownOpenFilter,selectedFilters, isLoader, dateErrMsg, searchText} = this.state;
 
     return(
             <AUX>
@@ -205,7 +225,7 @@ render(){
                             <div className="col-sm-6 filterSide text-center">
                                 <div className="searchInputRow">
                                     <i class="fa fa-search icon"></i>
-                                    <input placeholder="Search here..." class="input-field" type="text" />
+                                    <input placeholder="Search here..." class="input-field" type="text" onChange={this.handleSearch} value={searchText} />
                                 </div>
                                    
                                 <div className="filterRow">
@@ -267,7 +287,7 @@ render(){
                                             
                                                 <div className="filterFooter pt-4">
                                                     <Button color="btn rounded-pill boxColor" size="md" onClick={(e)=> this.resetFilter(e)}>Reset All</Button>
-                                                    <Button color="btn activeColor rounded-pill boxColor" size="md" onClick={()=> this.saveFilter}>Apply</Button>
+                                                    <Button color="btn activeColor rounded-pill boxColor" size="md" onClick={this.applyFilter}>Apply</Button>
                                                 </div>
                                                 {dateErrMsg && <span className="error">{ dateErrMsg } </span>}
                                             </div>
@@ -310,12 +330,12 @@ render(){
                                     <tr style={list.scanstatus === 'valid' ? {borderLeft: '5px solid #89D329'} : {borderLeft: '5px solid #FF4848' }}
                                         onClick={() => this.handleExpand(list) } >
                                         <td >{list.productlabelid}</td>
-                                        <td>{list.username}  </td>
-                                        <td>{list.username}  </td>
-                                        <td>{list.username}  </td>
-                                        <td>{list.username}  </td>
+                                        <td>{list.firstname + list.lastname}  </td>
+                                        <td>{list.userprimaryid}  </td>
+                                        <td>{list.productname}  </td>
+                                        <td>{list.quantity}  </td>
                                         <td>{list.scantype}  </td>
-                                        <td>{list.username}  </td>
+                                        <td>{list.warehousename}  </td>
                                         <td>{moment(list.selectedscanneddate).format('DD-MM-YYYY')}  </td>
                                         <td width="10%" align="center">
                                             {

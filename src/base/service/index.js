@@ -83,7 +83,7 @@ export function invokeGetService(path) {
 };
 
 //Get method with auth
-export function invokeGetAuthService(path,page) {
+export function invokeGetAuthService(path,formData) {
   return new Promise(function (resolve, reject) {
     const data =  getLocalStorageData('userData') ? JSON.parse(getLocalStorageData('userData')) : "";
     const URL = configApp.env;
@@ -91,7 +91,8 @@ export function invokeGetAuthService(path,page) {
       method: 'GET',
       params: {
         territory: 'PALOPO',
-        page: page
+        page: formData.pageNo,
+        searchtext: formData.searchText
       },
       headers: {
         'x-access-token': data.accessToken
