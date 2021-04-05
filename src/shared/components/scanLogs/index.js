@@ -1,5 +1,16 @@
 import React , {Component } from 'react';
-import { Dropdown,Button , DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
+import { 
+    Button,
+    Dropdown,
+    DropdownToggle,
+    DropdownMenu,
+    DropdownItem
+} from 'reactstrap';
+// import {  Tooltip, Overlay } from 'reactstrap';
+// import Button from "reactstrap/Button";
+// import {OverlayTrigger} from "reactstrap";
+// import Tooltip from "reactstrap";
+import { Tooltip } from "reactstrap";
 import AUX from '../../../hoc/Aux_';
 import Loaders from '../../widgets/loader';
 import { sortBy } from "../../../base/utils/tableSort";
@@ -9,11 +20,20 @@ import { invokeGetAuthService } from '../../../base/service';
 import moment from 'moment';
 import filterIcon from '../../widgets/icons/filter_icon.svg'
 import Loader from '../../widgets/loader';
+import { setLocalStorageData, getLocalStorageData, clearLocalStorageData } from '../../../base/localStore';
 
 
 class ScanLogs extends Component{
     constructor(props) {
         super(props)
+        var today=new Date()
+        var month,day,year;
+        var year=today.getFullYear();
+        var month=today.getMonth();
+        var date=today.getDate();
+        if((month-6)<=0)
+        year=today.getFullYear()
+        var backdate = new Date(year,month-6,date);
         this.state = {
             selectIndex: "",
             isAsc: true,
@@ -23,25 +43,36 @@ class ScanLogs extends Component{
             actions: ['All','Distributor','Retailer'],
             dropDownValue: 'Select action',
             scanType: ['All','Send Goods','Receive Goods','Sell to Farmers'],
-            productGroup: ['All','Fungicides','Herbicides'],
+            productCategory: ['All','Fungicide','Herbicide'],
             status: ['All', 'Valid', 'Invalid'],
             list: ['All', 'Distributor','Retailer'],
             selectedFilters: {
                 'type': 'All',
                 'scanType': 'All',
-                'productGroup': 'All',
+                'productCategory': 'All',
                 'status': 'All',
-                'startDate': new Date().toISOString().substr(0, 10),
+                'startDate': backdate.toISOString().substr(0, 10),
                 'endDate': new Date().toISOString().substr(0, 10)
             },
             dateErrMsg: '',
-            searchText: ''
+            searchText: '',
+            rowsPerPage: 20,
+            totalData: 0,
+            isFiltered: false,
+            userRole: '',
+            tooltipOpen: false
         }
         this.timeOut = 0;
          
     }
     componentDidMount(){
-        this.getScanLogs();
+        this.getScanLogs(this.state.pageNo);
+        let data = getLocalStorageData('userData');
+        let userData = JSON.parse(data);
+
+        this.setState({
+            userRole: userData.role
+        });
     }
 
     downloadExcel = () => {
@@ -120,13 +151,23 @@ class ScanLogs extends Component{
     getScanLogs = () => {
         const { scanLogs } = apiURL;
         this.setState({isLoader: true});
-        const data = {
+         const data = {
             pageNo: this.state.pageNo,
-            searchText: this.state.searchText
+            searchText: this.state.searchText,
+            rowsperpage: this.state.rowsPerPage,
+            role: this.state.selectedFilters.type,
+            scantype: this.state.selectedFilters.scanType,
+            productcategory:this.state.selectedFilters.productCategory,
+            scanstatus: this.state.selectedFilters.status,
+            isfiltered: this.state.isFiltered,
+            startdate: this.state.selectedFilters.startDate,
+            enddate: this.state.selectedFilters.endDate
         }
         invokeGetAuthService(scanLogs,data).then((response) => {
             console.log(response, 'response');
             this.setState({isLoader: false, allScanLogs: Object.keys(response.body).length !== 0 ? response.body.rows : []});
+            const total = response.body.totalrows;
+            this.setState({ totalData: Number(total)});
         }).catch((error) => {
             this.setState({isLoader: false});
             console.log(error, 'error');
@@ -162,15 +203,19 @@ class ScanLogs extends Component{
                 val[name] = e.target.value;
                 flag = true;
             } else {
-                this.setState({ dateErrMsg : 'Start date should be lesser than End Date' });
+                this.setState({ 
+                    dateErrMsg : 'Start date should be lesser than End Date'
+                 });
             }
         } 
         else if ( name === 'endDate') {
-            if( e.target.value >= val.startDate){
+           if(e.target.value >= new Date().toISOString().substr(0, 10)){
+                this.setState({ dateErrMsg : 'End Date should not be greater than todays date' });
+            } else if( e.target.value <= val.startDate){
+                this.setState({ dateErrMsg : 'End Date should be greater than Start Date' });
+            } else {
                 val[name] = e.target.value;
                 flag = true;
-            } else {
-                this.setState({ dateErrMsg : 'End Date should be lesser than Start Date' });
             }
         } else {
             val[name] = item;
@@ -187,30 +232,96 @@ class ScanLogs extends Component{
             selectedFilters: {
                 'type': 'All',
                 'scanType': 'All',
-                'productGroup': 'All',
+                'productCategory': 'All',
                 'status': 'All',
                  'startDate': new Date().toISOString().substr(0, 10),
                 'endDate': new Date().toISOString().substr(0, 10)
             },
+            isFiltered: false
         })
+        setTimeout(()=>{
+            this.getScanLogs();
+        },0);
     }
 
     handleSearch = (e) => {
         let searchText = e.target.value;
-        this.setState({searchText: searchText});
+            this.setState({searchText: searchText});
         if(this.timeOut){
             clearTimeout(this.timeOut);
         }
-        this.timeOut = setTimeout(() => {
-            this.getScanLogs();
-        }, 1000);
+        if(searchText.length >= 3 || searchText.length == 0) {
+            this.timeOut = setTimeout(() => {
+                this.getScanLogs();
+            }, 1000);
+        }
     }
     applyFilter = () => {
+        this.setState({isFiltered: true})
         console.log(this.state, 'hjhjj');
+        this.timeOut = setTimeout(() => {
+            this.getScanLogs();
+        }, 0);
+
+    }
+    previous = () => {
+        this.setState(prevState => ({
+            pageNo: prevState.pageNo-1
+        }));
+        setTimeout(()=>{
+            this.getScanLogs();
+        },0);
+        
+    }
+    next = () => {
+        this.setState(prevState => ({
+            pageNo: prevState.pageNo+1
+        }));
+        setTimeout(()=>{
+            this.getScanLogs();
+        },0);
+    }
+    pageNumberClick(number) {
+        this.setState({pageNo: number});
+        setTimeout(()=>{
+            this.getScanLogs();
+        },0);
+      }
+
+    toggle = () => {
+        this.setState({ tooltipOpen : !this.state.tooltipOpen})
     }
 
 render(){
-    const { isAsc, allScanLogs,dropdownOpenFilter,selectedFilters, isLoader, dateErrMsg, searchText} = this.state;
+    const { isAsc, allScanLogs,dropdownOpenFilter,selectedFilters, isLoader, dateErrMsg, searchText, pageNo,userRole,totalData} = this.state;
+    console.log('pageNo', this.state.pageNo, 'totaldata', this.state.userRole);
+
+
+    const pageNumbers = [];
+    const pageData = Math.ceil(this.state.totalData / this.state.rowsPerPage);
+    for (let i = 1; i <= pageData ; i++) {
+        pageNumbers.push(i);
+    }
+    const renderPageNumbers = pageNumbers.map(number => {
+        return (
+            // <button className="page-numbers" onClick={()=>this.handleClick(number)}>{number}</button>
+            <a href="#" className={pageNo == number ? "active" : ''} onClick={()=>this.pageNumberClick(number)}>{number}</a>
+        );
+    });
+
+    const tooltipItem = () => {
+        return (
+            <div>
+                <h7>Searchable Columns are</h7>
+                <ul style={{listStyle: 'none'}}>
+                    <li>LAbel </li>
+                    <li>Customer Name</li>
+                    <li>Product</li>
+                </ul>
+            </div>
+
+        );
+    }
 
     return(
             <AUX>
@@ -218,14 +329,26 @@ render(){
                 <div className="container-fluid card">
                     <div className="page-title-box mt-2">
                         <div className="row align-items-center">
-                            <div className="col-sm-6">
-                                <h4 className="page-title">Scan Logs</h4>
+                            <div className="col-sm-6 scanTitle">
+                                <h4 className="page-title">Scan Logs ({totalData})</h4>
+                                <h7 className="roleTitle">{userRole}</h7>
                             </div>
 
                             <div className="col-sm-6 filterSide text-center">
+                                <div>
+                                    <i class="fa fa-info-circle" id="Tooltip" aria-hidden="true"></i>
+                                    <Tooltip
+                                        placement="top"   
+                                        isOpen={this.state.tooltipOpen}
+                                        target="Tooltip"
+                                        toggle={()=>this.toggle()}
+                                    >
+                                    {tooltipItem}
+                                    </Tooltip>
+                                </div>
                                 <div className="searchInputRow">
                                     <i class="fa fa-search icon"></i>
-                                    <input placeholder="Search here..." class="input-field" type="text" onChange={this.handleSearch} value={searchText} />
+                                    <input placeholder="Search here" class="input-field" type="text" onChange={this.handleSearch} value={searchText} />
                                 </div>
                                    
                                 <div className="filterRow">
@@ -258,10 +381,10 @@ render(){
                                             
                                                 <label className="font-weight-bold pt-2">Product Group</label>
                                                 <div className="pt-1">
-                                                    {this.state.productGroup.map((item)=>
+                                                    {this.state.productCategory.map((item)=>
                                                         <span className="mr-2 chipLabel">
-                                                            <Button color={selectedFilters.productGroup === item ? "btn activeColor rounded-pill" : "btn rounded-pill boxColor"}
-                                                            size="sm" onClick={(e)=> this.handleFilterChange(e,"productGroup",item)}>{item}</Button>
+                                                            <Button color={selectedFilters.productCategory === item ? "btn activeColor rounded-pill" : "btn rounded-pill boxColor"}
+                                                            size="sm" onClick={(e)=> this.handleFilterChange(e,"productCategory",item)}>{item}</Button>
                                                         </span>
                                                     )}
                                                 </div>
@@ -287,7 +410,7 @@ render(){
                                             
                                                 <div className="filterFooter pt-4">
                                                     <Button color="btn rounded-pill boxColor" size="md" onClick={(e)=> this.resetFilter(e)}>Reset All</Button>
-                                                    <Button color="btn activeColor rounded-pill boxColor" size="md" onClick={this.applyFilter}>Apply</Button>
+                                                    <Button color="btn rounded-pill boxColor applybtn" size="md" onClick={()=>this.applyFilter()}>Apply</Button>
                                                 </div>
                                                 {dateErrMsg && <span className="error">{ dateErrMsg } </span>}
                                             </div>
@@ -304,7 +427,7 @@ render(){
                     </div>
                     <div className="test">
                     { allScanLogs.length > 0 ?   
-
+                    <div>
                     <div className="table-responsive">
                         <table className="table" id="tableData">
                             <thead>
@@ -374,6 +497,21 @@ render(){
 
                             </tbody>
                         </table>
+               
+                    </div>
+                    <div className="paginationNumber">
+                            <div>
+                                {/* <button id="btn_prev" className="btn btn-primary"  disabled onClick={()=>this.previous}>Prev</button> */}
+                                <a href="#" className="" onClick={()=>this.previous()} style={{ display: pageNo == 1 ? 'none' : 'block'}}>Prev</a>
+                            </div>
+                            <div >
+                                {renderPageNumbers}
+                            </div>
+                            <div>
+                                {/* <button id="btn_next" className="btn btn-primary" onClick={()=>this.next}>Next</button> */}
+                                <a href="#" onClick={()=>this.next()} style={{ display: pageNo == pageData ? 'none' : 'block'}}>Next</a>
+                            </div>
+                    </div>
                     </div>
                     :
                         this.state.isLoader ? <Loaders /> : 
