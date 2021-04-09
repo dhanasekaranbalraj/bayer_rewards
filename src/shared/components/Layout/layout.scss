@@ -120,6 +120,9 @@
   transition: all 0.5s;
   font-family: "Sarabun", sans-serif;
 }
+#sidebar-menu > ul > li > a.active {
+  padding: 12.5px 8px;
+}
 
 #sidebar-menu > ul > li > a:hover{
   color: #d1dfec;
@@ -158,8 +161,7 @@
 }
 
 #sidebar-menu > ul > li > span.active {
-  width: 15px;
-  // color: #b4c9de !important;
+  width: 12px;
   background-color: $white;
 }
 

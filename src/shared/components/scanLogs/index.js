@@ -16,7 +16,7 @@ import Loaders from '../../widgets/loader';
 import { sortBy } from "../../../base/utils/tableSort";
 import '../scanLogs/scanLogs.scss';
 import { apiURL } from '../../../base/utils/config';
-import { invokeGetAuthService } from '../../../base/service';
+import { invokeGetAuthService,invokeGetService } from '../../../base/service';
 import moment from 'moment';
 import filterIcon from '../../widgets/icons/filter_icon.svg'
 import Loader from '../../widgets/loader';
@@ -43,7 +43,7 @@ class ScanLogs extends Component{
             actions: ['All','Distributor','Retailer'],
             dropDownValue: 'Select action',
             scanType: ['All','Send Goods','Receive Goods','Sell to Farmers'],
-            productCategory: ['All','Fungicide','Herbicide'],
+            productCategories: [],
             status: ['All', 'Valid', 'Invalid'],
             list: ['All', 'Distributor','Retailer'],
             selectedFilters: {
@@ -56,11 +56,13 @@ class ScanLogs extends Component{
             },
             dateErrMsg: '',
             searchText: '',
-            rowsPerPage: 20,
+            rowsPerPage: 5,
             totalData: 0,
             isFiltered: false,
             userRole: '',
-            tooltipOpen: false
+            tooltipOpen: false,
+            startIndex: 1,
+            endIndex: 3
         }
         this.timeOut = 0;
          
@@ -73,6 +75,7 @@ class ScanLogs extends Component{
         this.setState({
             userRole: userData.role
         });
+        this.getProductCategory();
     }
 
     downloadExcel = () => {
@@ -152,8 +155,8 @@ class ScanLogs extends Component{
         const { scanLogs } = apiURL;
         this.setState({isLoader: true});
          const data = {
-            pageNo: this.state.pageNo,
-            searchText: this.state.searchText,
+            page: this.state.pageNo,
+            searchtext: this.state.searchText,
             rowsperpage: this.state.rowsPerPage,
             role: this.state.selectedFilters.type,
             scantype: this.state.selectedFilters.scanType,
@@ -163,6 +166,7 @@ class ScanLogs extends Component{
             startdate: this.state.selectedFilters.startDate,
             enddate: this.state.selectedFilters.endDate
         }
+        
         invokeGetAuthService(scanLogs,data).then((response) => {
             console.log(response, 'response');
             this.setState({isLoader: false, allScanLogs: Object.keys(response.body).length !== 0 ? response.body.rows : []});
@@ -174,6 +178,19 @@ class ScanLogs extends Component{
         });
     }
 
+    getProductCategory = () => {
+        const { productCategory } = apiURL;
+        this.setState({isLoader: true});
+        invokeGetAuthService(productCategory).then((response) => {
+            this.setState({isLoader: false, productCategories: Object.keys(response.body).length !== 0 ? response.body.rows : []});
+        });
+        setTimeout(() => {
+            this.setState({
+                productCategories: ['All',...this.state.productCategories]
+              })
+        },3000)
+    }
+
     handleExpand = (data) => {
         data.isExpand = !data.isExpand;
         this.setState({isRendered: true});
@@ -182,7 +199,6 @@ class ScanLogs extends Component{
     onSort(name, data) {
         let response = sortBy(name, data);
         this.setState({allScanLogs: response, isAsc: !this.state.isAsc})
-
     }
 
     toggleFilter = () => {
@@ -291,32 +307,54 @@ class ScanLogs extends Component{
     toggle = () => {
         this.setState({ tooltipOpen : !this.state.tooltipOpen})
     }
+    backForward = () => {
+        this.setState({startIndex: this.state.startIndex - 3, endIndex: this.state.endIndex - 1})
+    }
+    fastForward = () => {
+        this.setState({startIndex: this.state.endIndex + 1, endIndex: this.state.endIndex + 3})
+    }
 
 render(){
     const { isAsc, allScanLogs,dropdownOpenFilter,selectedFilters, isLoader, dateErrMsg, searchText, pageNo,userRole,totalData} = this.state;
-    console.log('pageNo', this.state.pageNo, 'totaldata', this.state.userRole);
-
+    console.log('productCategory', this.state.productCategories);
 
     const pageNumbers = [];
     const pageData = Math.ceil(this.state.totalData / this.state.rowsPerPage);
     for (let i = 1; i <= pageData ; i++) {
         pageNumbers.push(i);
     }
-    const renderPageNumbers = pageNumbers.map(number => {
+    const renderPageNumbers = pageNumbers.map((number,index) => {
         return (
             // <button className="page-numbers" onClick={()=>this.handleClick(number)}>{number}</button>
-            <a href="#" className={pageNo == number ? "active" : ''} onClick={()=>this.pageNumberClick(number)}>{number}</a>
+            <span>
+                { (totalData > 5 && number == 2) &&
+                    <div>
+                        <i className="fa fa-fast-backward" onClick={()=>this.backForward()}></i>
+                    </div> 
+                }
+                { (index >= this.state.startIndex && index <= this.state.endIndex ) &&
+                    <div>
+                        <a href="#" className={pageNo == number ? "active" : ''} onClick={()=>this.pageNumberClick(number)}>{number}</a>
+                    </div>
+                }
+
+                { (totalData > 5 && number == pageData-1) &&
+                    <div>
+                        <i className="fa fa-fast-forward" onClick={()=>this.fastForward()}></i>
+                    </div> 
+                }
+            </span>
         );
     });
-
     const tooltipItem = () => {
         return (
             <div>
                 <h7>Searchable Columns are</h7>
-                <ul style={{listStyle: 'none'}}>
-                    <li>LAbel </li>
+                <ul style={{listStyle: 'none',paddingRight: '35px'}}>
+                    <li>Label ID</li>
                     <li>Customer Name</li>
                     <li>Product</li>
+                    <li>Scan Type</li>
                 </ul>
             </div>
 
@@ -338,7 +376,7 @@ render(){
                                 <div>
                                     <i class="fa fa-info-circle" id="Tooltip" aria-hidden="true"></i>
                                     <Tooltip
-                                        placement="top"   
+                                        placement="right"   
                                         isOpen={this.state.tooltipOpen}
                                         target="Tooltip"
                                         toggle={()=>this.toggle()}
@@ -348,7 +386,7 @@ render(){
                                 </div>
                                 <div className="searchInputRow">
                                     <i class="fa fa-search icon"></i>
-                                    <input placeholder="Search here" class="input-field" type="text" onChange={this.handleSearch} value={searchText} />
+                                    <input placeholder="Search..[Min 3 chars]" class="input-field" type="text" onChange={this.handleSearch} value={searchText} />
                                 </div>
                                    
                                 <div className="filterRow">
@@ -381,8 +419,8 @@ render(){
                                             
                                                 <label className="font-weight-bold pt-2">Product Group</label>
                                                 <div className="pt-1">
-                                                    {this.state.productCategory.map((item)=>
-                                                        <span className="mr-2 chipLabel">
+                                                    {this.state.productCategories.map((item, i)=>
+                                                        <span className="mr-2 chipLabel" key={i}>
                                                             <Button color={selectedFilters.productCategory === item ? "btn activeColor rounded-pill" : "btn rounded-pill boxColor"}
                                                             size="sm" onClick={(e)=> this.handleFilterChange(e,"productCategory",item)}>{item}</Button>
                                                         </span>
@@ -500,6 +538,7 @@ render(){
                
                     </div>
                     <div className="paginationNumber">
+                          
                             <div>
                                 {/* <button id="btn_prev" className="btn btn-primary"  disabled onClick={()=>this.previous}>Prev</button> */}
                                 <a href="#" className="" onClick={()=>this.previous()} style={{ display: pageNo == 1 ? 'none' : 'block'}}>Prev</a>

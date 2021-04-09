@@ -91,16 +91,7 @@ export function invokeGetAuthService(path,formData) {
       method: 'GET',
       params: {
         territory: 'PALOPO',
-        page: formData.pageNo,
-        searchtext: formData.searchText,
-        rowsperpage: formData.rowsperpage,
-        role: formData.role,
-        scantype: formData.scantype,
-        productcategory:formData.productcategory,
-        scanstatus: formData.scanstatus,
-        isfiltered: formData.isfiltered,
-        startdate: formData.startdate,
-        enddate: formData.enddate
+        ...formData
       },
       headers: {
         'x-access-token': data.accessToken
